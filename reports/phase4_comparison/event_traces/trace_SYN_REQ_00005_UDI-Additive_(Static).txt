@@ -1,0 +1,33 @@
+Policy: UDI-Additive (Static)
+Final Outcome: {'Scenario_ID': 'SYN_REQ_00005', 'Policy': 'UDI-Additive (Static)', 'Urgency': 'URGENT', 'Units_Req': 4, 'Quota_Met_Eventual': True, 'Quota_Met_Deadline': True, 'Time_To_Fulfill_Eventual': 57.061855973464624, 'Time_To_Fulfill_Deadline': 57.061855973464624, 'Alerts_Sent': 30, 'Shortfall': 0, 'Waves': 5, 'Late_Arrivals': 0, 'Units_Fulfilled': 4, 'No_Suitable_Donors': False}
+Log:
+Wave 1: Dispatched SYN_D_00380 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00343 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00863 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00503 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00738 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00125 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00077 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00569 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00498 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00287 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00310 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00321 at 0.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00808 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00905 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00521 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00378 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00457 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00931 at 15.0m -> DonorState.ARRIVED
+Wave 2: Dispatched SYN_D_00772 at 15.0m -> DonorState.ACCEPTED
+Wave 2: Dispatched SYN_D_00417 at 15.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00960 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00679 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00093 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00610 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00959 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00353 at 30.0m -> DonorState.ACCEPTED
+Wave 4: Dispatched SYN_D_00754 at 45.0m -> DonorState.ACCEPTED
+Wave 4: Dispatched SYN_D_00464 at 45.0m -> DonorState.DECLINED
+Wave 4: Dispatched SYN_D_00176 at 45.0m -> DonorState.ACCEPTED
+Wave 4: Dispatched SYN_D_00459 at 45.0m -> DonorState.DECLINED

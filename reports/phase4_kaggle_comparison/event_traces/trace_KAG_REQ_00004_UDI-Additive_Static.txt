@@ -1,0 +1,34 @@
+Scenario: KAG_REQ_00004 | Policy: UDI-Additive (Static)
+Urgency: SCHEDULED | Units Required: 6
+Fulfilled: 6 (On-time: 6) | Late: 0
+Dispatch Log:
+  Wave 1 @   0.0m: Donor KAG_D_01485 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_01840 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00482 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_01344 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01340 -> DonorState.ACCEPTED
+  Wave 1 @   0.0m: Donor KAG_D_01837 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_00964 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01914 -> NOTIFIED
+  Wave 1 @   0.0m: Donor KAG_D_00531 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01133 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00102 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_00869 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00686 -> DonorState.ACCEPTED
+  Wave 1 @   0.0m: Donor KAG_D_00146 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01124 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_01959 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01334 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01598 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00037 -> NOTIFIED
+  Wave 2 @  15.0m: Donor KAG_D_00345 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00951 -> DonorState.ACCEPTED
+  Wave 2 @  15.0m: Donor KAG_D_01793 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_01279 -> DonorState.ARRIVED
+  Wave 2 @  15.0m: Donor KAG_D_00554 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_01891 -> DonorState.ACCEPTED
+  Wave 2 @  15.0m: Donor KAG_D_01968 -> DonorState.ACCEPTED
+  Wave 3 @  30.0m: Donor KAG_D_00238 -> DonorState.DECLINED
+  Wave 3 @  30.0m: Donor KAG_D_00835 -> DonorState.DECLINED
+  Wave 3 @  30.0m: Donor KAG_D_00129 -> DonorState.DECLINED
+  Wave 3 @  30.0m: Donor KAG_D_01567 -> DonorState.DECLINED

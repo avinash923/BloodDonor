@@ -1,0 +1,27 @@
+{
+  "run_id": "EXP5_ABL_SENS_c2ecc324",
+  "created_at": "2026-10-11T13:31:54.278398",
+  "seed": 42,
+  "n_scenarios_ablation": 500,
+  "n_donors_sampled": 2000,
+  "dataset_checksum": "d3d1a7e301de160b547816e41fcf61880817e5125bbc4b4364e49adcc3eb02a3",
+  "ablation_arms": [
+    "Full System",
+    "Ablation A (No Response Score)",
+    "Ablation B (No Timeliness Score)",
+    "Ablation C (No Fatigue Discount)",
+    "Ablation D (No Dynamic Re-ranking)",
+    "Ablation E (Response Score Only)"
+  ],
+  "sensitivity_dimensions": [
+    "Fatigue_Decay_Lambda",
+    "Urgency_Horizon_Tightness",
+    "Candidate_Pool_Size",
+    "Response_Propensity_Shift",
+    "Congestion_Travel_Multiplier",
+    "Operational_Availability_Rate",
+    "Blood_Units_Multiplier",
+    "Dispatch_Wave1_Multiplier",
+    "Response_Latency_Mu"
+  ]
+}

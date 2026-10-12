@@ -1,0 +1,32 @@
+=== Scenario SYN_REQ_00000 ===
+Seed: 42
+Urgency: CRITICAL
+Units Required: 1
+Deadline (T_crit): 60 mins
+
+--- Initial Candidate Ranking ---
+1. SYN_D_00030 | UDI: 0.3409 | T_score: 0.5891 | P: 0.78 | Fatigue: 0.74 | Elig: True
+2. SYN_D_00041 | UDI: 0.2415 | T_score: 0.5206 | P: 0.46 | Fatigue: 1.00 | Elig: True
+3. SYN_D_00012 | UDI: 0.1830 | T_score: 0.4154 | P: 0.59 | Fatigue: 0.74 | Elig: True
+4. SYN_D_00014 | UDI: 0.1396 | T_score: 0.3486 | P: 0.40 | Fatigue: 1.00 | Elig: True
+5. SYN_D_00013 | UDI: 0.1110 | T_score: 0.6167 | P: 0.18 | Fatigue: 1.00 | Elig: True
+
+--- Dispatch Log & Re-ranking Events ---
+Wave 1: Dispatched SYN_D_00030 at 0.0m
+  -> Response at 3.2m: Accepted=True
+  -> Arrived at 24.2m
+  -> Final State: DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00041 at 0.0m
+  -> Response at 15.7m: Accepted=False
+  -> Final State: DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00013 at 15.0m
+  -> Response at 17.6m: Accepted=True
+  -> Arrived at 37.2m
+  -> Final State: DonorState.ACCEPTED
+
+--- Final Outcome ---
+Quota Met: True
+Units Fulfilled: 1 / 1
+Time to Fulfillment: 24.17152758906816
+Total Waves: 3
+Total Alerts Sent: 3

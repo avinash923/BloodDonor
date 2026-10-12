@@ -1,0 +1,95 @@
+# =============================================================
+# udi_weights.yaml
+# Multi-criteria preference weights and penalty coefficients
+# for the Unified Donor Index (UDI) scoring engine.
+#
+# Additive:
+#   UDI(i,j,e) = [w_u·U(e) + w_t·(1 - τ_ij/T_crit) + w_p·P̂(i)]
+#                × Φ_fatigue(i)
+#
+# Multiplicative (recommended):
+#   UDI(i,j,e) = P̂(i) × (1 - τ_ij/T_budget) × Φ_fatigue(i)
+#   where T_budget = max(0, T_crit - T_buffer)
+#   Urgency dictates T_crit shape, not a separate scalar multiplier.
+#
+# Constraint (additive only): w_u + w_t + w_p == 1.0
+# =============================================================
+
+# ---------------------------------------------------------------
+# Formula mode selection
+# ---------------------------------------------------------------
+formula:
+  mode: "multiplicative"          # "additive" | "multiplicative"
+  probability_floor: 0.0          # Primary: no floor (use original scores)
+
+# Probability floor values for sensitivity analysis (EXP-8 / EXP-7)
+probability_floor_sweep: [0.0, 0.01, 0.05]
+
+# ---------------------------------------------------------------
+# Default multi-criteria weights (used by additive formula)
+# ---------------------------------------------------------------
+weights:
+  w_urgency:    0.30   # w_u: urgency tier importance
+  w_timeliness: 0.40   # w_t: travel-time proximity importance
+  w_probability: 0.30  # w_p: ML-predicted response probability importance
+
+# ---------------------------------------------------------------
+# Urgency score U(e): normalised per tier ∈ [0, 1]
+# Must mirror URGENCY_SCORE in data/schemas/request_schema.py
+# ---------------------------------------------------------------
+urgency_scores:
+  CRITICAL:  1.0
+  URGENT:    0.7
+  SCHEDULED: 0.4
+
+# ---------------------------------------------------------------
+# Donor Alert-Fatigue Penalty
+# Φ_fatigue(i) = exp(-λ × N_recent_alerts(i))
+# ---------------------------------------------------------------
+fatigue_penalty:
+  lambda_fatigue: 0.30   # Exponential decay rate; higher → heavier penalty
+  # Example: 0 alerts → Φ=1.0, 2 alerts → Φ≈0.55, 5 alerts → Φ≈0.22
+
+# ---------------------------------------------------------------
+# Fallback response probability when ML model output is unavailable
+# ---------------------------------------------------------------
+defaults:
+  fallback_response_probability: 0.25   # Population base rate ≈ 24–26%
+
+# ---------------------------------------------------------------
+# EXP-3: Weight configurations for comparison experiments
+# Baselines compared against the default (balanced) UDI above
+# ---------------------------------------------------------------
+experimental_configs:
+  # Ablation variants (used in EXP-6 ablation study)
+  no_probability:
+    w_urgency:    0.50
+    w_timeliness: 0.50
+    w_probability: 0.00
+
+  no_timeliness:
+    w_urgency:    0.50
+    w_timeliness: 0.00
+    w_probability: 0.50
+
+  urgency_dominant:
+    w_urgency:    0.60
+    w_timeliness: 0.25
+    w_probability: 0.15
+
+  probability_dominant:
+    w_urgency:    0.20
+    w_timeliness: 0.20
+    w_probability: 0.60
+
+  timeliness_dominant:
+    w_urgency:    0.15
+    w_timeliness: 0.70
+    w_probability: 0.15
+
+# ---------------------------------------------------------------
+# Sensitivity sweep range (used in EXP-7)
+# ---------------------------------------------------------------
+sensitivity:
+  w_urgency_range:   [0.10, 0.20, 0.30, 0.40, 0.50, 0.60]
+  lambda_fatigue_range: [0.10, 0.20, 0.30, 0.50, 0.70, 1.00]

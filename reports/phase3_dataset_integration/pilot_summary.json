@@ -1,0 +1,14 @@
+{
+  "n_scenarios": 20,
+  "n_donors_sampled": 200,
+  "quota_met_rate": 0.9,
+  "quota_met_on_time_rate": 0.9,
+  "mean_notifications": 13.5,
+  "mean_waves": 3.6,
+  "mean_late_arrivals": 0.0,
+  "urgency_breakdown": {
+    "CRITICAL": 1.0,
+    "SCHEDULED": 0.8571428571428571,
+    "URGENT": 0.9
+  }
+}

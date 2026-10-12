@@ -1,0 +1,64 @@
+{
+  "n_profiles": 200,
+  "n_eligible": 185,
+  "n_ineligible": 15,
+  "blood_type_distribution": {
+    "AB+": 21,
+    "B+": 24,
+    "AB-": 26,
+    "O+": 20,
+    "A+": 26,
+    "A-": 24,
+    "O-": 34,
+    "B-": 25
+  },
+  "city_distribution": {
+    "Adelaide": 22,
+    "Darwin": 19,
+    "Canberra": 26,
+    "Brisbane": 22,
+    "Hobart": 27,
+    "Melbourne": 23,
+    "Sydney": 29,
+    "Perth": 32
+  },
+  "provenance": {
+    "dataset_derived_fields": [
+      "city",
+      "blood_group",
+      "months_since_first_donation",
+      "number_of_donation",
+      "pints_donated",
+      "availability (historical label)"
+    ],
+    "synthetic_fields": [
+      "donor_id",
+      "latitude",
+      "longitude",
+      "is_eligible",
+      "synthetic_response_propensity",
+      "simulated_current_availability",
+      "recent_alert_count"
+    ],
+    "excluded_pii_fields": [
+      "name",
+      "password",
+      "email",
+      "created_at",
+      "contact_number",
+      "donor_id"
+    ],
+    "city_coordinate_mapping": {
+      "Sydney": "lat:[-33.95,-33.8], lon:[151.1,151.3]",
+      "Melbourne": "lat:[-37.85,-37.7], lon:[144.9,145.05]",
+      "Brisbane": "lat:[-27.52,-27.4], lon:[153.0,153.15]",
+      "Perth": "lat:[-32.0,-31.85], lon:[115.8,115.95]",
+      "Adelaide": "lat:[-35.0,-34.85], lon:[138.55,138.7]",
+      "Hobart": "lat:[-42.92,-42.83], lon:[147.28,147.38]",
+      "Darwin": "lat:[-12.48,-12.4], lon:[130.83,130.91]",
+      "Canberra": "lat:[-35.33,-35.22], lon:[149.06,149.18]"
+    },
+    "availability_semantics": "The source 'availability' field is a historical general-willingness label from the Kaggle dataset. It does NOT represent current operational availability or time-pressured emergency recruitment probability. Phase 2 classifier achieved near-chance performance (CV ROC-AUC=0.4959, Test ROC-AUC=0.4731), confirming limited predictive discrimination. A separate 'simulated_current_availability' field is generated synthetically for each simulation scenario.",
+    "response_propensity_semantics": "synthetic_response_propensity is drawn from Beta(2,5), independent of the Kaggle availability label. It is used ONLY as hidden simulation ground truth for the StochasticResponseModel, never as a ranking input."
+  }
+}

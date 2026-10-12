@@ -1,0 +1,19 @@
+{
+  "experiment": "Phase 6.3 \u2014 Donation-Aware Temporal Eligibility and Longitudinal Safety Simulation",
+  "official_guidance": "Drugs and Cosmetics Rules, 1945 (Schedule F, Part XII-B, as amended) & National Blood Transfusion Council (NBTC) / Directorate General of Health Services (DGHS) Guidelines, Ministry of Health and Family Welfare, Government of India: Whole-blood donation interval of minimum 3 months (90 days) for males and 4 months (120 days) for females.",
+  "execution_timestamp": "2026-10-11T18:38:14.501919",
+  "elapsed_seconds": 376.3045563697815,
+  "random_seed": 42,
+  "n_timelines": 15,
+  "horizon_days": 180.0,
+  "emergencies_per_day": 1.5,
+  "n_donors": 2000,
+  "arms": [
+    "Arm A (Fatigue-Aware + Donation Cooldown)",
+    "Arm B (Fatigue-Disabled + Donation Cooldown)",
+    "Arm C (Fatigue-Aware + No Cooldown)",
+    "Arm D (Fatigue-Disabled + No Cooldown)"
+  ],
+  "default_deferral_days_male": 90.0,
+  "default_deferral_days_female": 120.0
+}

@@ -1,0 +1,13 @@
+Scenario: KAG_REQ_00002 | Policy: Random
+Urgency: URGENT | Units Required: 1
+Fulfilled: 1 (On-time: 1) | Late: 0
+Dispatch Log:
+  Wave 1 @   0.0m: Donor KAG_D_00749 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01336 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00197 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00291 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00159 -> DonorState.ARRIVED
+  Wave 3 @  30.0m: Donor KAG_D_00720 -> DonorState.DECLINED
+  Wave 3 @  30.0m: Donor KAG_D_01800 -> DonorState.DECLINED
+  Wave 4 @  45.0m: Donor KAG_D_00845 -> DonorState.DECLINED
+  Wave 4 @  45.0m: Donor KAG_D_01738 -> DonorState.ACCEPTED

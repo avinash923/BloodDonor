@@ -1,0 +1,50 @@
+# =============================================================
+# simulation_config.yaml
+# Configuration for Phase 5: Dynamic Recruitment Simulation.
+#
+# Covers:
+#   - Wave dispatch parameters (batch sizing)
+#   - Stochastic response latency distributions
+#   - Episode termination bounds
+# =============================================================
+
+# ---------------------------------------------------------------
+# Wave Dispatch Policy
+# ---------------------------------------------------------------
+dispatch:
+  # Initial wave size multiplier (e.g., if Q=2, initial dispatch = 2 * 3 = 6)
+  wave_1_multiplier: 3.0
+  
+  # Subsequent wave size multiplier (e.g., Q_remaining * 2.0)
+  subsequent_wave_multiplier: 2.0
+  
+  # Maximum time to wait for responses before triggering next wave (minutes)
+  # If quota not met by this timeout, the next wave is dispatched.
+  wave_timeout_minutes: 15.0
+
+# ---------------------------------------------------------------
+# Stochastic Response Latency (LogNormal distribution)
+# Represents the time from alert to donor decision/response.
+# ---------------------------------------------------------------
+latency:
+  # Base parameters for response time (LogNormal)
+  # Mean latency ≈ exp(mu + sigma^2 / 2)
+  mu: 2.0      # ~7.4 minutes median
+  sigma: 0.8
+  
+  # Latency modifier for alert fatigue
+  # Each recent alert increases latency (donors respond slower if fatigued)
+  fatigue_latency_multiplier: 1.2  # 20% slower per recent alert
+  
+  # Minimum imposed latency (reaction time)
+  min_latency_minutes: 1.0
+
+# ---------------------------------------------------------------
+# Simulation Bounds
+# ---------------------------------------------------------------
+bounds:
+  # Absolute maximum waves per episode to prevent infinite loops
+  max_waves: 10
+  
+  # Time step resolution for discrete event engine (minutes)
+  time_step_minutes: 1.0

@@ -1,0 +1,80 @@
+{
+    "rows": 10000,
+    "columns": 6,
+    "dtypes": {
+        "city": "object",
+        "blood_group": "object",
+        "months_since_first_donation": "int64",
+        "number_of_donation": "int64",
+        "pints_donated": "int64",
+        "availability": "object"
+    },
+    "missing_values": {
+        "city": 0,
+        "blood_group": 0,
+        "months_since_first_donation": 0,
+        "number_of_donation": 0,
+        "pints_donated": 0,
+        "availability": 0
+    },
+    "duplicates": 37,
+    "availability_dist": {
+        "Yes": 5085,
+        "No": 4915
+    },
+    "categorical_dist": {
+        "city": {
+            "Canberra": 1283,
+            "Sydney": 1272,
+            "Brisbane": 1269,
+            "Darwin": 1254,
+            "Adelaide": 1250,
+            "Melbourne": 1241,
+            "Hobart": 1233,
+            "Perth": 1198
+        },
+        "blood_group": {
+            "B-": 1290,
+            "AB-": 1284,
+            "B+": 1282,
+            "O+": 1240,
+            "A+": 1238,
+            "A-": 1236,
+            "AB+": 1219,
+            "O-": 1211
+        }
+    },
+    "numeric_stats": {
+        "months_since_first_donation": {
+            "count": 10000.0,
+            "mean": 59.9531,
+            "std": 34.911378959131405,
+            "min": 0.0,
+            "25%": 30.0,
+            "50%": 60.0,
+            "75%": 90.0,
+            "max": 120.0
+        },
+        "number_of_donation": {
+            "count": 10000.0,
+            "mean": 25.1282,
+            "std": 14.654195279984854,
+            "min": 0.0,
+            "25%": 12.0,
+            "50%": 26.0,
+            "75%": 38.0,
+            "max": 50.0
+        },
+        "pints_donated": {
+            "count": 10000.0,
+            "mean": 37.614,
+            "std": 26.334072080391092,
+            "min": 0.0,
+            "25%": 16.0,
+            "50%": 34.0,
+            "75%": 50.0,
+            "max": 100.0
+        }
+    },
+    "checksum_sha256": "d3d1a7e301de160b547816e41fcf61880817e5125bbc4b4364e49adcc3eb02a3"
+}

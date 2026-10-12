@@ -1,0 +1,18 @@
+Policy: UDI-Multiplicative (Static)
+Final Outcome: {'Scenario_ID': 'SYN_REQ_00007', 'Policy': 'UDI-Multiplicative (Static)', 'Urgency': 'SCHEDULED', 'Units_Req': 3, 'Quota_Met_Eventual': True, 'Quota_Met_Deadline': True, 'Time_To_Fulfill_Eventual': 30.361183514895643, 'Time_To_Fulfill_Deadline': 30.361183514895643, 'Alerts_Sent': 15, 'Shortfall': 0, 'Waves': 4, 'Late_Arrivals': 0, 'Units_Fulfilled': 3, 'No_Suitable_Donors': False}
+Log:
+Wave 1: Dispatched SYN_D_00950 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00708 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00563 at 0.0m -> DonorState.ACCEPTED
+Wave 1: Dispatched SYN_D_00384 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00730 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00416 at 0.0m -> DonorState.ACCEPTED
+Wave 1: Dispatched SYN_D_00309 at 0.0m -> DonorState.ACCEPTED
+Wave 1: Dispatched SYN_D_00343 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00337 at 0.0m -> DonorState.ACCEPTED
+Wave 2: Dispatched SYN_D_00194 at 15.0m -> DonorState.ACCEPTED
+Wave 2: Dispatched SYN_D_00380 at 15.0m -> NOTIFIED
+Wave 2: Dispatched SYN_D_00664 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00047 at 15.0m -> DonorState.ACCEPTED
+Wave 3: Dispatched SYN_D_00498 at 30.0m -> NOTIFIED
+Wave 3: Dispatched SYN_D_00952 at 30.0m -> NOTIFIED

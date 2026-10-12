@@ -1,0 +1,36 @@
+Policy: Proximity-First
+Final Outcome: {'Scenario_ID': 'SYN_REQ_00003', 'Policy': 'Proximity-First', 'Urgency': 'SCHEDULED', 'Units_Req': 5, 'Quota_Met_Eventual': True, 'Quota_Met_Deadline': True, 'Time_To_Fulfill_Eventual': 50.742124077513864, 'Time_To_Fulfill_Deadline': 50.742124077513864, 'Alerts_Sent': 33, 'Shortfall': 0, 'Waves': 5, 'Late_Arrivals': 0, 'Units_Fulfilled': 5, 'No_Suitable_Donors': False}
+Log:
+Wave 1: Dispatched SYN_D_00582 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00454 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00848 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00036 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00926 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00272 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00423 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00271 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00286 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00293 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00027 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00216 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00942 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00281 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00403 at 0.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00586 at 15.0m -> DonorState.ARRIVED
+Wave 2: Dispatched SYN_D_00777 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00670 at 15.0m -> DonorState.ARRIVED
+Wave 2: Dispatched SYN_D_00544 at 15.0m -> NOTIFIED
+Wave 2: Dispatched SYN_D_00807 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00642 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00871 at 15.0m -> NOTIFIED
+Wave 2: Dispatched SYN_D_00088 at 15.0m -> DonorState.ARRIVED
+Wave 2: Dispatched SYN_D_00920 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00552 at 15.0m -> DonorState.ACCEPTED
+Wave 3: Dispatched SYN_D_00724 at 30.0m -> DonorState.ACCEPTED
+Wave 3: Dispatched SYN_D_00473 at 30.0m -> DonorState.ACCEPTED
+Wave 3: Dispatched SYN_D_00135 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00025 at 30.0m -> DonorState.ACCEPTED
+Wave 3: Dispatched SYN_D_00588 at 30.0m -> NOTIFIED
+Wave 3: Dispatched SYN_D_00607 at 30.0m -> DonorState.DECLINED
+Wave 4: Dispatched SYN_D_00226 at 45.0m -> NOTIFIED
+Wave 4: Dispatched SYN_D_00421 at 45.0m -> NOTIFIED

@@ -1,0 +1,14 @@
+Scenario: KAG_REQ_00003 | Policy: Proximity-First
+Urgency: SCHEDULED | Units Required: 2
+Fulfilled: 2 (On-time: 2) | Late: 0
+Dispatch Log:
+  Wave 1 @   0.0m: Donor KAG_D_00701 -> NOTIFIED
+  Wave 1 @   0.0m: Donor KAG_D_00129 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01453 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_01914 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01217 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01837 -> DonorState.ARRIVED
+  Wave 2 @  15.0m: Donor KAG_D_01723 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_01766 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00846 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_01124 -> DonorState.DECLINED

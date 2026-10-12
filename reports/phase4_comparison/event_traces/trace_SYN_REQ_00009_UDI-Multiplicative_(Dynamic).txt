@@ -1,0 +1,6 @@
+Policy: UDI-Multiplicative (Dynamic)
+Final Outcome: {'Scenario_ID': 'SYN_REQ_00009', 'Policy': 'UDI-Multiplicative (Dynamic)', 'Urgency': 'URGENT', 'Units_Req': 1, 'Quota_Met_Eventual': True, 'Quota_Met_Deadline': True, 'Time_To_Fulfill_Eventual': 7.656870650328995, 'Time_To_Fulfill_Deadline': 7.656870650328995, 'Alerts_Sent': 3, 'Shortfall': 0, 'Waves': 2, 'Late_Arrivals': 0, 'Units_Fulfilled': 1, 'No_Suitable_Donors': False}
+Log:
+Wave 1: Dispatched SYN_D_00563 at 0.0m -> NOTIFIED
+Wave 1: Dispatched SYN_D_00413 at 0.0m -> DonorState.ACCEPTED
+Wave 1: Dispatched SYN_D_00151 at 0.0m -> DonorState.ARRIVED

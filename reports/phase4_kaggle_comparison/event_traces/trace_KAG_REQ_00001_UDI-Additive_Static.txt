@@ -1,0 +1,7 @@
+Scenario: KAG_REQ_00001 | Policy: UDI-Additive (Static)
+Urgency: URGENT | Units Required: 1
+Fulfilled: 1 (On-time: 1) | Late: 0
+Dispatch Log:
+  Wave 1 @   0.0m: Donor KAG_D_01547 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_01675 -> NOTIFIED
+  Wave 1 @   0.0m: Donor KAG_D_01858 -> DonorState.DECLINED

@@ -1,0 +1,5 @@
+Phase 4 comparative experiment completed successfully.
+Scenarios evaluated: 500
+Total episodes: 3500
+Elapsed time: 34.94s
+Timestamp: 2026-10-11T13:18:25.694276

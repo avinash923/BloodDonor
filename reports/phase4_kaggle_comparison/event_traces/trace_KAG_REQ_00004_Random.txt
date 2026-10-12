@@ -1,0 +1,46 @@
+Scenario: KAG_REQ_00004 | Policy: Random
+Urgency: SCHEDULED | Units Required: 6
+Fulfilled: 6 (On-time: 6) | Late: 0
+Dispatch Log:
+  Wave 1 @   0.0m: Donor KAG_D_00835 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00686 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_01598 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01219 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01561 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00964 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01344 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01837 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_00807 -> DonorState.ACCEPTED
+  Wave 1 @   0.0m: Donor KAG_D_01133 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00102 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_00464 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_01793 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00951 -> DonorState.ACCEPTED
+  Wave 1 @   0.0m: Donor KAG_D_01607 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01452 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_00869 -> DonorState.DECLINED
+  Wave 1 @   0.0m: Donor KAG_D_01645 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00129 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_01107 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_01891 -> DonorState.ARRIVED
+  Wave 2 @  15.0m: Donor KAG_D_00064 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_01334 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00146 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00468 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00531 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_00238 -> DonorState.DECLINED
+  Wave 2 @  15.0m: Donor KAG_D_01279 -> DonorState.ARRIVED
+  Wave 3 @  30.0m: Donor KAG_D_00345 -> DonorState.DECLINED
+  Wave 3 @  30.0m: Donor KAG_D_01383 -> DonorState.DECLINED
+  Wave 3 @  30.0m: Donor KAG_D_01485 -> DonorState.ACCEPTED
+  Wave 3 @  30.0m: Donor KAG_D_01340 -> DonorState.ACCEPTED
+  Wave 3 @  30.0m: Donor KAG_D_01121 -> DonorState.DECLINED
+  Wave 3 @  30.0m: Donor KAG_D_00918 -> DonorState.DECLINED
+  Wave 3 @  30.0m: Donor KAG_D_01914 -> NOTIFIED
+  Wave 3 @  30.0m: Donor KAG_D_01840 -> DonorState.DECLINED
+  Wave 4 @  45.0m: Donor KAG_D_00152 -> NOTIFIED
+  Wave 4 @  45.0m: Donor KAG_D_01124 -> DonorState.ACCEPTED
+  Wave 4 @  45.0m: Donor KAG_D_00187 -> NOTIFIED
+  Wave 4 @  45.0m: Donor KAG_D_01066 -> DonorState.DECLINED
+  Wave 4 @  45.0m: Donor KAG_D_00545 -> DonorState.ACCEPTED
+  Wave 4 @  45.0m: Donor KAG_D_00037 -> NOTIFIED

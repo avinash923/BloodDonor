@@ -1,0 +1,25 @@
+Policy: Random
+Final Outcome: {'Scenario_ID': 'SYN_REQ_00000', 'Policy': 'Random', 'Urgency': 'URGENT', 'Units_Req': 2, 'Quota_Met_Eventual': True, 'Quota_Met_Deadline': True, 'Time_To_Fulfill_Eventual': 80.24500774335445, 'Time_To_Fulfill_Deadline': 80.24500774335445, 'Alerts_Sent': 22, 'Shortfall': 0, 'Waves': 7, 'Late_Arrivals': 0, 'Units_Fulfilled': 2, 'No_Suitable_Donors': False}
+Log:
+Wave 1: Dispatched SYN_D_00524 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00859 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00865 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00519 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00666 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00921 at 0.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00230 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00691 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00687 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00495 at 15.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00791 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00781 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00759 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00569 at 30.0m -> DonorState.DECLINED
+Wave 4: Dispatched SYN_D_00582 at 45.0m -> DonorState.ACCEPTED
+Wave 4: Dispatched SYN_D_00382 at 45.0m -> DonorState.DECLINED
+Wave 4: Dispatched SYN_D_00793 at 45.0m -> DonorState.ARRIVED
+Wave 4: Dispatched SYN_D_00006 at 45.0m -> DonorState.DECLINED
+Wave 5: Dispatched SYN_D_00261 at 60.0m -> DonorState.ACCEPTED
+Wave 5: Dispatched SYN_D_00027 at 60.0m -> DonorState.ACCEPTED
+Wave 6: Dispatched SYN_D_00780 at 75.0m -> NOTIFIED
+Wave 6: Dispatched SYN_D_00136 at 75.0m -> NOTIFIED

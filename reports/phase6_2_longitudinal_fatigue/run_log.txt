@@ -1,0 +1,25 @@
+Phase 6.2 Longitudinal Experiment Log
+Started: 2026-10-11T18:13:45.141297
+Completed: 2026-10-11T18:17:25.623454
+Elapsed Time: 220.47 seconds
+Timelines: 20 | Emergencies per arm: 1554 | Matched episodes: 3108
+Metric verification passed: True
+Paired Statistics Summary (timeline-clustered, Arm A minus Arm B):
+  Lookback_Repeat_Notification_Rate: Arm A=0.4088, Arm B=0.5686, Diff=-0.1598 [95% CI: -0.1667, -0.1531], Wilcoxon p=1.9073e-06
+  Pct_Donors_Repeat_Notified: Arm A=13.9000, Arm B=11.4500, Diff=2.4500 [95% CI: 2.1450, 2.8101], Wilcoxon p=8.8324e-05
+  Pct_Donors_Heavy_Notified: Arm A=1.5750, Arm B=3.2675, Diff=-1.6925 [95% CI: -1.8700, -1.5250], Wilcoxon p=1.9073e-06
+  Max_Alerts_Single_Donor: Arm A=7.3000, Arm B=12.8000, Diff=-5.5000 [95% CI: -6.2000, -4.7500], Wilcoxon p=8.0465e-05
+  Mean_Alerts_Per_Donor_All: Arm A=0.5522, Arm B=0.5480, Diff=0.0042 [95% CI: -0.0002, 0.0085], Wilcoxon p=6.3988e-02
+  Alert_Fatigue_Index: Arm A=5.1311, Arm B=5.0934, Diff=0.0377 [95% CI: -0.0025, 0.0770], Wilcoxon p=7.0157e-02
+  Deadline_Fulfilment_Rate: Arm A=99.5787, Arm B=99.7742, Diff=-0.1955 [95% CI: -0.4679, 0.0617], Wilcoxon p=1.3801e-01
+  Mean_Time_To_Deadline_Met: Arm A=27.9978, Arm B=27.5056, Diff=0.4921 [95% CI: 0.1655, 0.8182], Wilcoxon p=1.0689e-02
+  Pct_Donors_Lookback_Repeat: Arm A=11.7975, Arm B=10.4750, Diff=1.3225 [95% CI: 1.0049, 1.6500], Wilcoxon p=1.0306e-04
+  Mean_Alerts_Per_Contacted_Donor: Arm A=1.9740, Arm B=2.5871, Diff=-0.6131 [95% CI: -0.6502, -0.5735], Wilcoxon p=1.9073e-06
+  Gini_Notification_Inequality: Arm A=0.8100, Arm B=0.8758, Diff=-0.0658 [95% CI: -0.0711, -0.0609], Wilcoxon p=1.9073e-06
+  Eventual_Fulfilment_Rate: Arm A=99.6482, Arm B=99.7742, Diff=-0.1260 [95% CI: -0.3771, 0.1219], Wilcoxon p=2.7332e-01
+  Mean_Time_To_Eventual_Met: Arm A=28.0262, Arm B=27.5056, Diff=0.5206 [95% CI: 0.1821, 0.8456], Wilcoxon p=9.4357e-03
+  Unfulfilled_Deadline_Proportion: Arm A=0.0042, Arm B=0.0023, Diff=0.0020 [95% CI: -0.0006, 0.0047], Wilcoxon p=1.3801e-01
+  Mean_Alerts_Per_Emergency: Arm A=14.2034, Arm B=14.0916, Diff=0.1119 [95% CI: 0.0013, 0.2176], Wilcoxon p=5.8573e-02
+  Alerts_Per_Deadline_Fulfilled_Emergency: Arm A=14.2640, Arm B=14.1239, Diff=0.1402 [95% CI: 0.0123, 0.2637], Wilcoxon p=4.0136e-02
+  Late_Arrival_Rate: Arm A=0.0002, Arm B=0.0000, Diff=0.0002 [95% CI: 0.0000, 0.0007], Wilcoxon p=3.1731e-01
+  Shortfall_Ratio: Arm A=0.0020, Arm B=0.0015, Diff=0.0005 [95% CI: -0.0005, 0.0014], Wilcoxon p=2.7332e-01

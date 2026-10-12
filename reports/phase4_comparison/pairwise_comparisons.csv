@@ -1,0 +1,7 @@
+Policy,Baseline,McNemar_Stat,McNemar_p_approx,McNemar_p_exact,Wilcoxon_p_conditional,Joint_Successes
+Random,UDI-Multiplicative (Dynamic),22.041666666666668,2.6679545936247906e-06,1.1920928955078125e-07,1.2838309887364746e-82,498
+Proximity-First,UDI-Multiplicative (Dynamic),11.076923076923077,0.0008740872112984756,0.000244140625,0.3417385422439301,497
+Probability-First,UDI-Multiplicative (Dynamic),0.0,1.0,1.0,1.0064485776697243e-64,500
+Heuristic,UDI-Multiplicative (Dynamic),0.0,1.0,1.0,0.17618794504025692,500
+UDI-Additive (Static),UDI-Multiplicative (Dynamic),1.3333333333333333,0.24821307898992026,0.25,0.40058836184900826,500
+UDI-Multiplicative (Static),UDI-Multiplicative (Dynamic),0.5,0.47950012218695337,0.5,0.7778287442058148,500

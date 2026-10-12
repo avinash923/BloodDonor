@@ -1,0 +1,15 @@
+Policy: Proximity-First
+Final Outcome: {'Scenario_ID': 'SYN_REQ_00002', 'Policy': 'Proximity-First', 'Urgency': 'URGENT', 'Units_Req': 2, 'Quota_Met_Eventual': True, 'Quota_Met_Deadline': True, 'Time_To_Fulfill_Eventual': 42.97729158803273, 'Time_To_Fulfill_Deadline': 42.97729158803273, 'Alerts_Sent': 12, 'Shortfall': 0, 'Waves': 4, 'Late_Arrivals': 0, 'Units_Fulfilled': 2, 'No_Suitable_Donors': False}
+Log:
+Wave 1: Dispatched SYN_D_00695 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00437 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00569 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00621 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00557 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00863 at 0.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00327 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00227 at 15.0m -> DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00125 at 15.0m -> DonorState.ARRIVED
+Wave 2: Dispatched SYN_D_00089 at 15.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00826 at 30.0m -> DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00879 at 30.0m -> DonorState.DECLINED

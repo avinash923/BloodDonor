@@ -1,0 +1,13 @@
+Policy: Probability-First
+Final Outcome: {'Scenario_ID': 'SYN_REQ_00002', 'Policy': 'Probability-First', 'Urgency': 'URGENT', 'Units_Req': 2, 'Quota_Met_Eventual': True, 'Quota_Met_Deadline': True, 'Time_To_Fulfill_Eventual': 26.81888834233143, 'Time_To_Fulfill_Deadline': 26.81888834233143, 'Alerts_Sent': 10, 'Shortfall': 0, 'Waves': 3, 'Late_Arrivals': 0, 'Units_Fulfilled': 2, 'No_Suitable_Donors': False}
+Log:
+Wave 1: Dispatched SYN_D_00877 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00337 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00563 at 0.0m -> DonorState.ACCEPTED
+Wave 1: Dispatched SYN_D_00950 at 0.0m -> DonorState.ACCEPTED
+Wave 1: Dispatched SYN_D_00255 at 0.0m -> DonorState.ACCEPTED
+Wave 1: Dispatched SYN_D_00463 at 0.0m -> DonorState.ACCEPTED
+Wave 2: Dispatched SYN_D_00708 at 15.0m -> DonorState.ACCEPTED
+Wave 2: Dispatched SYN_D_00416 at 15.0m -> DonorState.ACCEPTED
+Wave 2: Dispatched SYN_D_00454 at 15.0m -> DonorState.ACCEPTED
+Wave 2: Dispatched SYN_D_00384 at 15.0m -> DonorState.ACCEPTED

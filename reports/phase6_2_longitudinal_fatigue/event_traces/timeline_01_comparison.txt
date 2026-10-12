@@ -1,0 +1,12 @@
+=== Longitudinal Trace: Timeline 01 (30 Days) ===
+Total Emergencies: 84
+
+Arm A (Fatigue-Aware): Deadline Rate=100.0%, Mean Time=28.99m, Repeat Donors=16.2%, Max Alerts Single Donor=7
+Arm B (Fatigue-Disabled): Deadline Rate=100.0%, Mean Time=28.03m, Repeat Donors=13.1%, Max Alerts Single Donor=14
+
+Top 5 Most Contacted Donors in Arm B vs Arm A:
+  Donor KAG_D_00922: Arm B=14 alerts | Arm A=6 alerts
+  Donor KAG_D_01703: Arm B=13 alerts | Arm A=6 alerts
+  Donor KAG_D_00980: Arm B=12 alerts | Arm A=7 alerts
+  Donor KAG_D_01329: Arm B=12 alerts | Arm A=6 alerts
+  Donor KAG_D_00448: Arm B=11 alerts | Arm A=6 alerts

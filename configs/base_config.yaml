@@ -1,0 +1,63 @@
+# =============================================================
+# base_config.yaml
+# Global experiment configuration for the Blood Donor
+# Recommendation & Recruitment Research System.
+# =============================================================
+
+project:
+  name: "AI-Based Time-Aware Emergency Blood Donor Recommendation"
+  version: "1.0.0"
+  description: >
+    Multi-phase research experiment comparing ML-based donor propensity
+    modeling, spatiotemporal feasibility, UDI ranking, and dynamic
+    recruitment simulation.
+
+# ---------------------------------------------------------------
+# Reproducibility: all experiments use a fixed global random seed.
+# Each phase may derive sub-seeds deterministically from this.
+# ---------------------------------------------------------------
+reproducibility:
+  global_seed: 42
+  numpy_seed: 42
+  sklearn_seed: 42
+  xgboost_seed: 42
+
+# ---------------------------------------------------------------
+# Data paths (relative to project root c:\BloodDonor)
+# ---------------------------------------------------------------
+data:
+  raw:
+    uci_dir: "data/raw/uci"
+    uci_filename: "transfusion.data"
+    uci_url: "https://archive.ics.uci.edu/ml/machine-learning-databases/blood-transfusion/transfusion.data"
+    synthetic_dir: "data/raw/synthetic"
+    empirical_dir: "data/raw/empirical"
+  processed:
+    uci_features_dir: "data/processed/uci_features"
+    synthetic_scenarios_dir: "data/processed/synthetic_scenarios"
+  schemas_dir: "data/schemas"
+
+# ---------------------------------------------------------------
+# Cross-validation settings (Phase 2 — ML benchmark)
+# ---------------------------------------------------------------
+cross_validation:
+  n_splits: 5
+  strategy: "stratified"
+  shuffle: true
+
+# ---------------------------------------------------------------
+# Logging
+# ---------------------------------------------------------------
+logging:
+  level: "INFO"          # DEBUG | INFO | WARNING | ERROR
+  log_dir: "reports/logs"
+  console_output: true
+
+# ---------------------------------------------------------------
+# Reporting
+# ---------------------------------------------------------------
+reporting:
+  tables_dir: "reports/tables"
+  figures_dir: "reports/figures"
+  figure_dpi: 150
+  figure_format: "png"

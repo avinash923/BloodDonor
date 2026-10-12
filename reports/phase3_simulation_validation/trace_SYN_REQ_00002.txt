@@ -1,0 +1,61 @@
+=== Scenario SYN_REQ_00002 ===
+Seed: 42
+Urgency: URGENT
+Units Required: 3
+Deadline (T_crit): 120 mins
+
+--- Initial Candidate Ranking ---
+1. SYN_D_00030 | UDI: 0.3673 | T_score: 0.6348 | P: 0.78 | Fatigue: 0.74 | Elig: True
+2. SYN_D_00041 | UDI: 0.2663 | T_score: 0.5738 | P: 0.46 | Fatigue: 1.00 | Elig: True
+3. SYN_D_00012 | UDI: 0.2116 | T_score: 0.4804 | P: 0.59 | Fatigue: 0.74 | Elig: True
+4. SYN_D_00014 | UDI: 0.1685 | T_score: 0.4210 | P: 0.40 | Fatigue: 1.00 | Elig: True
+5. SYN_D_00045 | UDI: 0.1245 | T_score: 0.5186 | P: 0.44 | Fatigue: 0.55 | Elig: True
+
+--- Dispatch Log & Re-ranking Events ---
+Wave 1: Dispatched SYN_D_00030 at 0.0m
+  -> Response at 18.2m: Accepted=True
+  -> Arrived at 55.5m
+  -> Final State: DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00041 at 0.0m
+  -> Response at 3.7m: Accepted=True
+  -> Arrived at 47.2m
+  -> Final State: DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00012 at 0.0m
+  -> Response at 3.4m: Accepted=True
+  -> Arrived at 56.4m
+  -> Final State: DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00014 at 0.0m
+  -> Response at 7.1m: Accepted=False
+  -> Final State: DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00045 at 0.0m
+  -> Response at 4.3m: Accepted=False
+  -> Final State: DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00007 at 0.0m
+  -> Response at 6.5m: Accepted=False
+  -> Final State: DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00013 at 15.0m
+  -> Response at 20.6m: Accepted=False
+  -> Final State: DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00002 at 15.0m
+  -> Response at 24.9m: Accepted=False
+  -> Final State: DonorState.DECLINED
+Wave 2: Dispatched SYN_D_00016 at 15.0m
+  -> Response at 25.4m: Accepted=True
+  -> Arrived at 83.7m
+  -> Final State: DonorState.ACCEPTED
+Wave 3: Dispatched SYN_D_00003 at 30.0m
+  -> Response at 35.3m: Accepted=False
+  -> Final State: DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00022 at 30.0m
+  -> Response at 33.9m: Accepted=False
+  -> Final State: DonorState.DECLINED
+Wave 3: Dispatched SYN_D_00005 at 30.0m
+  -> Response at 48.2m: Accepted=False
+  -> Final State: DonorState.DECLINED
+
+--- Final Outcome ---
+Quota Met: True
+Units Fulfilled: 3 / 3
+Time to Fulfillment: 56.43221398852258
+Total Waves: 4
+Total Alerts Sent: 12

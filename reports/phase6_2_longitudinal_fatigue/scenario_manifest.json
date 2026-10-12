@@ -1,0 +1,60 @@
+{
+  "experiment_name": "Phase 6.2 Longitudinal Multi-Episode Fatigue Simulation",
+  "study_type": "in-silico simulation; not clinical validation",
+  "dataset_path": "C:\\BloodDonor\\data\\raw\\blood_donor_dataset_modeling.csv",
+  "dataset_sha256": "d3d1a7e301de160b547816e41fcf61880817e5125bbc4b4364e49adcc3eb02a3",
+  "random_seed": 42,
+  "timeline_schedule_seed_formula": "seed + 1000 + timeline_id * 37",
+  "response_variate_seed_formula": "seed + timeline_id * 10000 + scenario_index * 10",
+  "n_timelines": 20,
+  "horizon_days": 30.0,
+  "emergencies_per_day": 2.5,
+  "request_arrival_process": "exponential inter-arrival with mean 24/rate hours; truncated when next arrival would exceed the horizon",
+  "total_emergencies_simulated": 1554,
+  "matched_arm_episode_count": 3108,
+  "n_donors_per_timeline": 2000,
+  "same_donor_pool_across_timelines": true,
+  "default_lambda_fatigue": 0.3,
+  "default_lookback_days": 14.0,
+  "fatigue_formula": "Phi = exp(-lambda * N_recent_alerts)",
+  "lookback_boundary_semantics": "A prior notification at time t is counted in N_recent_alerts at query time T iff T - lookback_days <= t <= T (closed interval). Ranking queries T = emergency request_timestamp before any dispatch in that emergency.",
+  "sensitivity_lambdas": [
+    0.0,
+    0.05,
+    0.1,
+    0.2,
+    0.3,
+    0.45,
+    0.6
+  ],
+  "sensitivity_lookback_windows": [
+    7.0,
+    14.0,
+    30.0
+  ],
+  "sensitivity_timelines": 5,
+  "sensitivity_status": "exploratory; not a confirmatory multiplicity-controlled analysis",
+  "dispatch_policy": {
+    "w1_mult": 3.0,
+    "w_sub_mult": 2.0
+  },
+  "udi_formula_mode": "multiplicative",
+  "wave_timeout_minutes": 15.0,
+  "max_waves": 10,
+  "observation_horizon_minutes": 1440.0,
+  "response_model": {
+    "acceptance": "Bernoulli using synthetic_response_propensity; not fatigue-dependent",
+    "latency": "lognormal(mu=2.0, sigma=0.8), min 1 minute; recent_alerts argument left at default 0",
+    "kaggle_availability": "not used as response probability"
+  },
+  "omitted_longitudinal_clinical_constraints": [
+    "No post-donation 8-week deferral update after simulated arrival",
+    "Eligibility is a static synthetic 90% flag assigned at profile construction",
+    "No haemoglobin, infection, or age-based deferral rules",
+    "simulated_current_availability is not used as a hard dispatch filter"
+  ],
+  "information_separation": "Ranker sees travel time, eligibility, blood-compatibility-filtered pool, synthetic_response_propensity (same optimistic P used in Phase 4/5), and N_recent_alerts. Ranker does not see future accept/decline outcomes, sampled latency, or arrival events.",
+  "execution_timestamp": "2026-10-11T18:17:25.611449",
+  "elapsed_seconds": 220.47,
+  "metric_verification_passed": true
+}

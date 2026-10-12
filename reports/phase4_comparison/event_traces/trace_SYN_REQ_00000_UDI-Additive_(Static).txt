@@ -1,0 +1,9 @@
+Policy: UDI-Additive (Static)
+Final Outcome: {'Scenario_ID': 'SYN_REQ_00000', 'Policy': 'UDI-Additive (Static)', 'Urgency': 'URGENT', 'Units_Req': 2, 'Quota_Met_Eventual': True, 'Quota_Met_Deadline': True, 'Time_To_Fulfill_Eventual': 11.346059346144932, 'Time_To_Fulfill_Deadline': 11.346059346144932, 'Alerts_Sent': 6, 'Shortfall': 0, 'Waves': 2, 'Late_Arrivals': 0, 'Units_Fulfilled': 2, 'No_Suitable_Donors': False}
+Log:
+Wave 1: Dispatched SYN_D_00708 at 0.0m -> DonorState.ARRIVED
+Wave 1: Dispatched SYN_D_00950 at 0.0m -> DonorState.DECLINED
+Wave 1: Dispatched SYN_D_00384 at 0.0m -> NOTIFIED
+Wave 1: Dispatched SYN_D_00730 at 0.0m -> NOTIFIED
+Wave 1: Dispatched SYN_D_00563 at 0.0m -> DonorState.ACCEPTED
+Wave 1: Dispatched SYN_D_00977 at 0.0m -> DonorState.ARRIVED

@@ -1,0 +1,7 @@
+Scenario: KAG_REQ_00000 | Policy: Probability-First
+Urgency: SCHEDULED | Units Required: 1
+Fulfilled: 1 (On-time: 1) | Late: 0
+Dispatch Log:
+  Wave 1 @   0.0m: Donor KAG_D_01675 -> DonorState.ARRIVED
+  Wave 1 @   0.0m: Donor KAG_D_00355 -> DonorState.ACCEPTED
+  Wave 1 @   0.0m: Donor KAG_D_00922 -> DonorState.ACCEPTED

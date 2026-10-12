@@ -1,0 +1,87 @@
+# =============================================================
+# spatial_config.yaml
+# Configuration for Phase 3: Spatiotemporal Feasibility Engine.
+#
+# Covers:
+#   - Urban grid / coordinate system parameters
+#   - Vehicle speed profiles per road class
+#   - Time-of-day traffic congestion coefficients
+#   - Urgency horizon overrides
+# =============================================================
+
+# ---------------------------------------------------------------
+# Synthetic Urban Grid Parameters
+# (used ONLY by synthetic_generator.py — SYNTHETIC_SIMULATION)
+# ---------------------------------------------------------------
+urban_grid:
+  seed: 42
+  n_donors: 1000             # Synthetic donor pool size
+  n_requests: 100            # Emergency scenarios to generate
+  # Bounding box: approximate mid-sized Indian city (lat/lon degrees)
+  lat_min: 12.800
+  lat_max: 13.100
+  lon_min: 77.450
+  lon_max: 77.750
+  # Hospital / blood bank sites
+  n_sites: 5
+
+# ---------------------------------------------------------------
+# Road Speed Profiles (km/h)
+# ---------------------------------------------------------------
+speed_profiles:
+  # Base urban road speeds by road class
+  arterial:   45.0   # Major arterial roads
+  collector:  30.0   # Collector/secondary roads
+  local:      20.0   # Local / residential roads
+  default:    30.0   # Fallback speed when road class unknown
+
+  # Emergency vehicle speed (for critical-tier scenarios)
+  emergency_vehicle: 60.0
+
+# ---------------------------------------------------------------
+# Time-of-Day Traffic Congestion Multipliers
+# kappa_traffic(t) in (0, 1]: 1.0 = free flow, lower = congestion
+# 24 slots (one per hour, 0–23)
+# ---------------------------------------------------------------
+congestion_profile:
+  # Hour:  0     1     2     3     4     5     6     7     8     9    10    11
+  hourly: [1.00, 1.00, 1.00, 1.00, 0.95, 0.85, 0.70, 0.55, 0.45, 0.60, 0.70, 0.75,
+  #        12    13    14    15    16    17    18    19    20    21    22    23
+           0.75, 0.80, 0.80, 0.75, 0.60, 0.45, 0.55, 0.70, 0.85, 0.90, 0.95, 1.00]
+
+# ---------------------------------------------------------------
+# Urgency Tier Horizon Overrides (minutes)
+# These are the T_critical values fed into the feasibility filter.
+# Must remain consistent with data/schemas/request_schema.py.
+# ---------------------------------------------------------------
+urgency_horizons:
+  CRITICAL:  60    # Level 1 – life-threatening trauma
+  URGENT:   120    # Level 2 – urgent surgery
+  SCHEDULED: 240   # Level 3 – planned shortage
+
+# ---------------------------------------------------------------
+# Feasibility Filter Thresholds
+# ---------------------------------------------------------------
+feasibility:
+  # Safety margin: require arrival within (1 - margin) * T_critical
+  # to account for donation processing time at the site
+  safety_margin_fraction: 0.15
+
+  # Minimum feasible pool size per scenario before raising a warning
+  min_feasible_pool_warn: 3
+
+# ---------------------------------------------------------------
+# EXP-2 Experiment Parameters
+# ---------------------------------------------------------------
+experiment:
+  n_scenarios: 100           # Number of synthetic scenarios to evaluate
+  distance_methods:          # Methods compared in EXP-2
+    - "euclidean"
+    - "haversine"
+    - "network_grid"
+  traffic_simulation: true   # Apply congestion multipliers
+  request_hours:             # Hours of day to test (covers peak and off-peak)
+    - 8    # Morning peak
+    - 14   # Afternoon
+    - 18   # Evening peak
+    - 2    # Off-peak night

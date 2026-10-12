@@ -1,0 +1,24 @@
+# Data
+data/raw/blood_donor_dataset.csv
+data/raw/blood_donor_dataset_modeling.csv
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.test-tmp/
+data/runtime/
+.env
+.venv_py310_backup/
+.test-tmp*/
+.tmp-*/
+.env.*
+!.env.example
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+**/service-account*.json
+**/firebase-adminsdk*.json
