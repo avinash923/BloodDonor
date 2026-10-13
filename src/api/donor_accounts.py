@@ -4,11 +4,15 @@ import hmac
 import math
 import re
 import secrets
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 BLOOD_TYPES = ("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
 MAX_LOCATION_AGE_SECONDS = 900
 MAX_ACCURACY_METERS = 250
+MAX_PRIOR_DONATIONS = 200
+MAX_HISTORY_MONTHS = 720
+DAYS_PER_MONTH = 30.4375
+HISTORY_FIELDS = ("prior_donation_count", "months_since_last_donation", "months_since_first_donation")
 
 
 def password_record(password):
@@ -26,6 +30,36 @@ def password_matches(password, record):
     return hmac.compare_digest(digest, record["digest"])
 
 
+def donation_history(body, now=None, source="self_reported"):
+    """Validate optional self-reported history (counts and months before now).
+
+    Returns None when no history fields are supplied or the donor reports no
+    prior donations. Months are converted to timestamps so they age correctly.
+    """
+    if all(body.get(key) is None for key in HISTORY_FIELDS):
+        return None
+    count, last, first = (body.get(key) for key in HISTORY_FIELDS)
+    if type(count) is not int or not 0 <= count <= MAX_PRIOR_DONATIONS:
+        raise ValueError(f"Prior donation count must be a whole number from 0 to {MAX_PRIOR_DONATIONS}")
+    if count == 0:
+        if last is not None or first is not None:
+            raise ValueError("Donation dates cannot be given without prior donations")
+        return None
+    if first is None and count == 1:
+        first = last
+    for label, value in (("last", last), ("first", first)):
+        if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= MAX_HISTORY_MONTHS:
+            raise ValueError(f"Months since {label} donation must be a number from 0 to {MAX_HISTORY_MONTHS}")
+    if first < last:
+        raise ValueError("The first donation cannot be more recent than the last donation")
+    if count == 1 and first != last:
+        raise ValueError("With one prior donation, the first and last donation are the same")
+    now = now or datetime.now(timezone.utc)
+    at = lambda months: (now - timedelta(days=months * DAYS_PER_MONTH)).isoformat()
+    return {"prior_donations": count, "first_donation_at": at(first), "last_donation_at": at(last),
+            "source": source, "reported_at": now.isoformat()}
+
+
 def new_donor(body):
     username = body.get("username")
     name = body.get("name")
@@ -41,6 +75,7 @@ def new_donor(body):
             "blood_type": body["blood_type"], "phone": "", "latitude": None,
             "longitude": None, "availability": False, "recent_alerts": 0,
             "account_source": "registered", "location_consent": False,
+            "donation_history": donation_history(body),
             "password_record": password_record(body.get("password"))}
 
 

@@ -17,6 +17,7 @@ Never mix outputs from this loader with synthetic or empirical streams.
 
 from __future__ import annotations
 
+import hashlib
 import io
 import urllib.request
 from pathlib import Path
@@ -46,6 +47,21 @@ _UCI_URL = (
     "blood-transfusion/transfusion.data"
 )
 
+# Mirrors tried in order when the UCI host is unreachable. A mirror copy is
+# only accepted if it reproduces the canonical content checksum below.
+_MIRROR_URLS = (
+    _UCI_URL,
+    # PyCaret's public dataset repository ("blood" = UCI transfusion.data).
+    "https://raw.githubusercontent.com/pycaret/datasets/main/data/common/blood.csv",
+)
+
+# Canonical content of transfusion.data: 748 rows, 178 positives. The checksum
+# is over the parsed integer values (little-endian int64, row-major), so it is
+# independent of header text and CRLF/LF line endings.
+EXPECTED_N_ROWS = 748
+EXPECTED_N_POSITIVE = 178
+EXPECTED_CONTENT_SHA256 = "0c5bfc6d287ced28e723cf1485d9d73f3c38c7c26e524b756a5b6ac2b29274be"
+
 _FEATURE_COLS = ["recency", "frequency", "monetary", "time"]
 _TARGET_COL = "donated"
 
@@ -72,26 +88,50 @@ def download_uci_dataset(save_dir: str = "data/raw/uci") -> Path:
         logger.info("UCI dataset already present at %s — skipping download.", filepath)
         return filepath
 
-    logger.info("Downloading UCI Blood Transfusion dataset from %s ...", _UCI_URL)
-    try:
-        urllib.request.urlretrieve(_UCI_URL, filepath)
-        logger.info("Download complete. Saved to %s.", filepath)
-    except Exception as exc:
-        logger.error("Download failed: %s", exc)
-        raise RuntimeError(
-            f"Could not download UCI dataset from {_UCI_URL}. "
-            "Please download transfusion.data manually and place it in "
-            f"{save_dir}."
-        ) from exc
+    errors = []
+    for url in _MIRROR_URLS:
+        logger.info("Downloading UCI Blood Transfusion dataset from %s ...", url)
+        try:
+            with urllib.request.urlopen(url, timeout=30) as response:
+                payload = response.read()
+            df = pd.read_csv(io.BytesIO(payload), header=0)
+            verify_uci_content(df)
+        except Exception as exc:  # network failure or content mismatch: try next mirror
+            logger.warning("Source %s rejected: %s", url, exc)
+            errors.append(f"{url}: {exc}")
+            continue
+        filepath.write_bytes(payload.replace(b"\r\n", b"\n"))
+        logger.info("Download verified and saved to %s.", filepath)
+        return filepath
 
-    return filepath
+    raise RuntimeError(
+        "Could not obtain a verified copy of the UCI dataset. "
+        f"Place transfusion.data manually in {save_dir}. Attempts: " + "; ".join(errors)
+    )
+
+
+def content_sha256(df: pd.DataFrame) -> str:
+    """Checksum of the parsed 5-column integer table (format independent)."""
+    values = np.ascontiguousarray(df.iloc[:, :5].to_numpy(dtype="<i8"))
+    return hashlib.sha256(values.tobytes()).hexdigest()
+
+
+def verify_uci_content(df: pd.DataFrame) -> None:
+    """Raise ValueError unless df is exactly the published UCI transfusion table."""
+    if df.shape != (EXPECTED_N_ROWS, 5):
+        raise ValueError(f"Expected shape ({EXPECTED_N_ROWS}, 5), got {df.shape}")
+    if int(df.iloc[:, 4].sum()) != EXPECTED_N_POSITIVE:
+        raise ValueError(f"Expected {EXPECTED_N_POSITIVE} positives, got {int(df.iloc[:, 4].sum())}")
+    digest = content_sha256(df)
+    if digest != EXPECTED_CONTENT_SHA256:
+        raise ValueError(f"Content checksum mismatch: {digest}")
 
 
 # =================================================================
 # Loading & Validation
 # =================================================================
 
-def load_uci_dataframe(filepath: str | Path) -> pd.DataFrame:
+def load_uci_dataframe(filepath: str | Path, verify: bool = False) -> pd.DataFrame:
     """
     Load and validate the UCI transfusion.data CSV file.
 
@@ -100,9 +140,11 @@ def load_uci_dataframe(filepath: str | Path) -> pd.DataFrame:
       - Dtype enforcement (all integer).
       - Consistency check: M == 250 * F for every row.
       - Missing value check.
+      - Optional canonical-content verification (row count, positives, checksum).
 
     Args:
         filepath: Path to transfusion.data.
+        verify:   If True, require the exact published UCI content.
 
     Returns:
         Validated pandas DataFrame with columns:
@@ -136,6 +178,9 @@ def load_uci_dataframe(filepath: str | Path) -> pd.DataFrame:
             f"UCI dataset contains {n_missing} missing values — "
             "dataset corruption or format mismatch."
         )
+
+    if verify:
+        verify_uci_content(df)
 
     # Monetary consistency check (M == 250 * F)
     inconsistent = (df["monetary"] != df["frequency"] * 250).sum()

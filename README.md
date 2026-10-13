@@ -74,6 +74,31 @@ Backend requests, invitations, alert counts, and donation records persist in `da
 
 The login screen's **Offline Mock Mode** runs without the backend. It retains actions across refreshes and role changes within the app session; browser reload resets offline data. Offline scores and ETAs are fixed illustrative values. Live backend mode runs the UDI engine and synthetic routing service.
 
+## Donor return-propensity model (XGBoost)
+
+The API attaches an XGBoost estimate of each donor's likelihood to donate again to donor profiles
+(`donation_propensity`) and to recruitment candidate rows. It is trained on the real **UCI Blood
+Transfusion Service Center** data: 748 donors from Hsin-Chu City, Taiwan, with the label "donated in
+March 2007". The inputs are recency, frequency and tenure in months. The earlier Kaggle "availability"
+data was dropped because every model scored chance-level ROC-AUC (0.47–0.51) on it.
+
+* Retrain and regenerate the report: `python experiments/exp11_xgboost_donor_propensity.py`
+  (about 80 seconds on 4 cores). Results go to `reports/xgboost_propensity/`, `visuals/xgboost_propensity/`
+  and `notes/comparison-xgboost-propensity.md`.
+* Nested 5×5 cross-validation gives ROC-AUC **0.749 ± 0.036** and a Brier score of 0.153, against 0.181 for
+  the base rate. That is the same as logistic regression (p = 0.77). The repo's previous XGBoost
+  defaults overfit (ROC-AUC 0.680).
+* The artefact `models/donor_propensity_xgb.json` contains the trees, the Platt calibration and the
+  provenance. The API scores it in pure Python, so the server needs neither xgboost nor a pickle.
+  Override the path with `DONOR_PROPENSITY_MODEL`.
+* Inputs come from in-app completed donations and from optional self-reported history.
+  Registration accepts `prior_donation_count`, `months_since_last_donation` and
+  `months_since_first_donation`; `POST /api/v1/donor/history` updates them. Donors with no donation
+  receive no estimate, because the UCI population has at least one donation each. Demo accounts carry
+  labelled synthetic histories.
+* The value is **advisory**. It predicts voluntary return donation, not emergency-invitation response,
+  so it does not change UDI scores or invitation order. The Flutter screens do not display it yet.
+
 ## Mobile and routing configuration
 
 ```powershell
