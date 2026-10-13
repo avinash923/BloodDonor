@@ -66,7 +66,12 @@ class RecruitmentManager:
             if not result.is_feasible or not result.is_eligible or eta is None or not math.isfinite(eta) or eta < 0 or eta > budget:
                 continue
             donor = self.state.users[result.donor_id]
+            propensity = getattr(self.state, "propensity", None)
             results.append({"donor_id": result.donor_id, "donor_name": donor["name"],
+                            # Advisory only: voluntary-return model output, not part of UDI or ordering.
+                            "donation_propensity": propensity.probability(
+                                donor, self.state.donation_tracker.donor_states.get(result.donor_id), now)
+                                if propensity else None,
                             "blood_type": donor["blood_type"], "udi_score": round(result.udi_score, 4),
                             "travel_time_minutes": round(eta, 1), "is_feasible": True,
                             "is_eligible": True, "recent_alerts": donor.get("recent_alerts", 0),

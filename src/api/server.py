@@ -16,6 +16,7 @@ Endpoints:
   GET  /api/v1/emergency/recommendations   -> Get ranked candidates via UDI engine & routing
   GET  /api/v1/emergency/routes            -> Get detailed route polyline and travel estimate
   POST /api/v1/emergency/donation/complete -> Record confirmed donation and update eligibility
+  POST /api/v1/donor/history               -> Update self-reported donation history (propensity input)
 
 DATA STREAM: REST_API (Backend coordinator)
 """
@@ -42,7 +43,8 @@ from src.spatial.routing_provider import LocationCoordinate, TravelMode, Routing
 from src.simulation.donation_tracker import DonationAwareEligibilityTracker, DonationLifecycleState, CompletedDonationRecord, DonationType
 from src.utils.logger import get_logger
 from src.api.recruitment import RecruitmentManager
-from src.api.donor_accounts import new_donor, password_matches, location_ready, update_location, revoke_location
+from src.api.donor_accounts import new_donor, password_matches, location_ready, update_location, revoke_location, donation_history
+from src.api.propensity import PropensityService
 from src.api.notifications import NotificationDispatcher
 from src.simulation.donation_tracker import DonorTemporalEligibilityState
 
@@ -62,6 +64,11 @@ class SystemState:
         self.udi_engine = UDIEngine(formula_mode="multiplicative")
         self.routing_service = RoutingService()
         self.donation_tracker = DonationAwareEligibilityTracker(seed=42)
+        self.propensity = PropensityService.load()
+        startup = datetime.now(timezone.utc)
+        demo_history = lambda count, last, first: donation_history(
+            {"prior_donation_count": count, "months_since_last_donation": last,
+             "months_since_first_donation": first}, startup, source="synthetic_demo")
 
         # Preloaded demo users
         self.users = {
@@ -75,6 +82,7 @@ class SystemState:
                 "longitude": 77.6245,
                 "availability": True,
                 "recent_alerts": 1,
+                "donation_history": demo_history(6, 3, 30),
             },
             "donor_002": {
                 "user_id": "donor_002",
@@ -86,6 +94,7 @@ class SystemState:
                 "longitude": 77.5946,
                 "availability": True,
                 "recent_alerts": 0,
+                "donation_history": demo_history(1, 14, 14),
             },
             "staff_001": {
                 "user_id": "staff_001",
@@ -103,7 +112,10 @@ class SystemState:
             did = f"donor_{index:03d}"
             self.users[did] = {"user_id": did, "role": "donor", "name": f"Demo Donor {index:03d}",
                 "blood_type": "O+", "phone": "Demo account", "latitude": 12.9915 + index * 0.0007,
-                "longitude": 77.5852 + index * 0.0005, "availability": True, "recent_alerts": 0}
+                "longitude": 77.5852 + index * 0.0005, "availability": True, "recent_alerts": 0,
+                # Deterministic, explicitly synthetic histories give the propensity column some spread.
+                "donation_history": demo_history(1 + index * 5 % 12, index * 7 % 25,
+                                                 index * 7 % 25 + 4 * (index * 5 % 12))}
 
         # Initialize donation tracker for demo donors
         self.donation_tracker.initialize_donor_population(
@@ -317,6 +329,7 @@ class BloodDonorApiHandler(BaseHTTPRequestHandler):
                 "location_consent": user.get("location_consent", False),
                 "location_captured_at": user.get("location_captured_at"),
                 "location_accuracy_meters": user.get("location_accuracy_meters"),
+                "donation_propensity": STATE.propensity.estimate(user, don_state, now_dt),
             }
             self._send_json(200, resp)
             return
@@ -461,6 +474,24 @@ class BloodDonorApiHandler(BaseHTTPRequestHandler):
             token = secrets.token_urlsafe(32)
             STATE.sessions[token] = did
             self._send_json(201, {"token": token, "user_id": did, "name": donor["name"], "role": "donor"})
+            return
+
+        if path == "/api/v1/donor/history":
+            user = self._authenticate()
+            if not user or user.get("role") != "donor":
+                self._send_json(401, {"error": "Donor login required"})
+                return
+            try:
+                history = donation_history(body)
+            except ValueError as error:
+                self._send_json(400, {"error": str(error)})
+                return
+            with STATE.lock:
+                user["donation_history"] = history
+                STATE.save()
+            estimate = STATE.propensity.estimate(user, STATE.donation_tracker.donor_states.get(user["user_id"]),
+                                                 datetime.now(timezone.utc))
+            self._send_json(200, {"donation_history": history, "donation_propensity": estimate})
             return
 
         if path == "/api/v1/donor/location":
