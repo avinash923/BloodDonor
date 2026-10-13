@@ -23,6 +23,7 @@ class RoutingProviderType(str, Enum):
     """Available routing providers."""
     SYNTHETIC = "synthetic"
     GOOGLE = "google"
+    OSRM = "osrm"
 
 
 class TravelMode(str, Enum):

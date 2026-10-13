@@ -408,6 +408,10 @@ label {
 input[type="text"],
 input[type="password"],
 input[type="number"],
+input[type="tel"],
+input[type="email"],
+input[type="date"],
+input[type="search"],
 select {
   width: 100%;
   background: rgba(255, 255, 255, 0.04);
@@ -1200,3 +1204,111 @@ select option {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==========================================================================
+   Request broadcast, donor cards, maps and directory
+   ========================================================================== */
+
+select option { background: #111827; color: var(--text-main); }
+input[type="date"] { color-scheme: dark; }
+
+.modal-dialog.modal-xl { max-width: 1100px; }
+.map-container.map-small { height: 240px; margin: 10px 0; }
+.map-container.map-medium { height: 320px; margin: 12px 0; }
+.mb-4 { margin-bottom: 1.5rem; }
+.small { font-size: 0.85rem; }
+.tiny-note { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
+.text-critical { color: var(--critical) !important; }
+.field-help { font-size: 0.8rem; color: var(--text-muted); margin: 6px 0 10px; }
+
+.status-pill.status-warning .status-dot { background: var(--warning); box-shadow: 0 0 8px var(--warning); }
+.status-pill.status-error .status-dot { background: var(--critical); box-shadow: 0 0 8px var(--critical); }
+
+.toast { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.toast-close { background: none; border: none; color: inherit; font-size: 1.1rem; cursor: pointer; }
+
+.inline-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.inline-actions input { flex: 1 1 220px; }
+
+.checkbox-row, .switch-row {
+  display: flex; align-items: flex-start; gap: 10px; margin: 10px 0;
+  font-size: 0.9rem; color: var(--text-muted); cursor: pointer;
+}
+.checkbox-row input, .switch-row input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--primary); flex: none; }
+.switch-row { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-subtle); }
+
+.search-results { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; max-height: 220px; overflow-y: auto; }
+.search-result {
+  text-align: left; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm); padding: 8px 12px; color: var(--text-main); cursor: pointer;
+  display: flex; flex-direction: column; gap: 2px; font-family: var(--font-sans);
+}
+.search-result span { font-size: 0.78rem; color: var(--text-muted); }
+.search-result:hover { border-color: var(--primary); }
+.search-empty { font-size: 0.85rem; color: var(--text-dim); padding: 6px 2px; }
+
+.header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.live-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--text-muted); }
+
+.count-chip {
+  display: inline-block; font-size: 0.75rem; padding: 2px 8px; border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.06); color: var(--text-muted); margin: 1px 2px 1px 0;
+}
+.count-chip.ok { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.row-closed td { opacity: 0.6; }
+
+.score-bar { width: 80px; height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
+.score-bar > div { height: 100%; background: linear-gradient(90deg, var(--primary), var(--warning)); }
+
+.donor-card {
+  border: 1px solid rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.06);
+  border-radius: var(--radius-lg); padding: 18px; margin-bottom: 14px;
+}
+.donor-card-done { border-color: var(--border-subtle); background: var(--bg-subtle); }
+.donor-card-head { display: flex; align-items: center; gap: 12px; }
+.donor-card-head h4 { font-size: 1.1rem; }
+.donor-card-head .badge-pill { margin-left: auto; }
+.donor-facts {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px 18px; margin: 14px 0;
+}
+.donor-facts div { display: flex; flex-direction: column; gap: 2px; }
+.donor-facts span { font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.03em; }
+.donor-facts strong { font-size: 0.95rem; font-weight: 600; }
+.donor-facts a, .invitation-details a { color: var(--info); text-decoration: none; }
+.donor-card-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.invitation-card.invitation-accepted { border-color: rgba(16, 185, 129, 0.5); background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(15, 23, 42, 0.6)); }
+.invitation-card + .invitation-card { margin-top: 14px; }
+.past-alerts { margin-top: 16px; color: var(--text-muted); }
+.past-alerts summary { cursor: pointer; font-size: 0.9rem; }
+.past-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem; }
+
+.edit-details { margin-top: 14px; }
+.edit-details summary { cursor: pointer; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; }
+
+.filter-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 4px; }
+.filter-bar input[type="search"] { flex: 2 1 260px; }
+.filter-bar select { flex: 1 1 180px; width: auto; }
+.filter-bar .checkbox-row { margin: 0; }
+.pager { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 14px; color: var(--text-muted); font-size: 0.9rem; }
+
+.map-pin {
+  display: flex !important; align-items: center; justify-content: center; border-radius: 50%;
+  border: 2px solid #fff; font-size: 14px; box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+.map-pin.pin-hospital { background: #E11D48; }
+.map-pin.pin-donor { background: #10B981; }
+.map-pin.pin-done { background: #64748B; }
+
+.nav-btn:disabled, .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 700px) {
+  .wave-banner { flex-wrap: wrap; gap: 12px; }
+  .modal-dialog { padding: 18px; }
+  .portal-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+
+.invitation-details { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px 18px; }
+.wave-info { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }

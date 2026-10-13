@@ -5,6 +5,7 @@ Unified Routing Service Factory & Dispatcher.
 Manages provider lifecycle and selection based on system configuration:
 - ROUTING_PROVIDER=synthetic (default)
 - ROUTING_PROVIDER=google
+- ROUTING_PROVIDER=osrm (free OpenStreetMap road routing, no key)
 
 Provides clean integration with the recommendation engine and UDI ranker:
 Takes candidate donors and emergency hospital coordinates, retrieves ETAs,
@@ -30,6 +31,7 @@ from src.spatial.routing_provider import (
 )
 from src.spatial.synthetic_routing_provider import SyntheticRoutingProvider
 from src.spatial.google_routes_provider import GoogleMapsRoutesProvider
+from src.spatial.osrm_provider import OSRMRoutingProvider
 from src.ranking.udi_engine import DonorCandidate
 from src.utils.logger import get_logger
 
@@ -63,6 +65,9 @@ class RoutingService:
                 travel_mode=travel_mode,
                 routing_preference=routing_preference,
             )
+        elif self.provider_type == RoutingProviderType.OSRM:
+            logger.info("Initializing free OSRM road routing provider (OpenStreetMap).")
+            self.provider = OSRMRoutingProvider(fallback=synthetic_provider)
         else:
             logger.info("Initializing Synthetic Routing provider (offline/deterministic).")
             self.provider = synthetic_provider or SyntheticRoutingProvider()
