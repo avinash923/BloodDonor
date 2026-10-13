@@ -2,15 +2,25 @@
 
 A Python recommendation and research engine with a Flutter donor portal and hospital dispatch desk. The demo uses synthetic travel estimates and exact blood-group matching. Response propensity and deferral settings are simulated research inputs.
 
+## Start the Full Live Version (Windows)
+
+To run the complete production-grade system without synthetic wave donors, with real donor registration, live UDI mathematical engine, UCI XGBoost return-propensity model, and the integrated web dashboard:
+
+```powershell
+.\start-full.ps1
+```
+
+Open **http://127.0.0.1:8000**. The launcher starts the full live API server with persistent state (`data/runtime/full_system_state.json`), serves the web dashboard, and automatically opens your browser.
+
 ## Start the browser demo (Windows)
 
-From PowerShell in `C:\BloodDonor`:
+From PowerShell:
 
 ```powershell
 .\start-demo.ps1
 ```
 
-Open **http://127.0.0.1:8000**. The script builds the Flutter web app if needed and runs the API and app on the same port. Python dependencies must be installed in `.venv`; Flutter must be on PATH. After source changes, use `.\start-demo.ps1 -Rebuild`. Stop with Ctrl+C.
+Open **http://127.0.0.1:8000**. The demo script populates synthetic donor wave accounts for test simulations. Stop with Ctrl+C.
 
 If another server uses port 8000, use `.\start-demo.ps1 -Port 8010` and open **http://127.0.0.1:8010**. For native clients on this port, supply `--dart-define=API_BASE_URL=http://10.0.2.2:8010` on Android emulators.
 
