@@ -1,13 +1,26 @@
-"""Local donor accounts and consented foreground location snapshots."""
+"""Local donor accounts and consented donor location snapshots."""
 import hashlib
 import hmac
 import math
 import re
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 BLOOD_TYPES = ("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+# Red-cell (whole blood / packed RBC) donor groups acceptable for each recipient group.
+RBC_COMPATIBLE_DONORS = {
+    "O-": ("O-",),
+    "O+": ("O-", "O+"),
+    "A-": ("O-", "A-"),
+    "A+": ("O-", "O+", "A-", "A+"),
+    "B-": ("O-", "B-"),
+    "B+": ("O-", "O+", "B-", "B+"),
+    "AB-": ("O-", "A-", "B-", "AB-"),
+    "AB+": BLOOD_TYPES,
+}
+# A location older than this is still used for matching, but staff see it as stale.
 MAX_LOCATION_AGE_SECONDS = 900
+LOCATION_SOURCES = ("device", "manual")
 MAX_ACCURACY_METERS = 250
 MAX_PRIOR_DONATIONS = 200
 MAX_HISTORY_MONTHS = 720
@@ -60,6 +73,73 @@ def donation_history(body, now=None, source="self_reported"):
             "source": source, "reported_at": now.isoformat()}
 
 
+def donor_blood_types(request):
+    """Donor groups invited for a request: exact match, or every RBC-compatible group."""
+    needed = request["blood_type_required"]
+    return RBC_COMPATIBLE_DONORS[needed] if request.get("include_compatible") else (needed,)
+
+
+def _parse_date(value, label, today):
+    try:
+        parsed = date.fromisoformat(value)
+    except (TypeError, ValueError):
+        raise ValueError(f"{label} must be a date (YYYY-MM-DD)") from None
+    if parsed > today:
+        raise ValueError(f"{label} cannot be in the future")
+    if (today - parsed).days > MAX_HISTORY_MONTHS * DAYS_PER_MONTH:
+        raise ValueError(f"{label} is too far in the past")
+    return parsed
+
+
+def history_from_dates(body, now=None):
+    """Turn calendar dates (last/first donation) into the month fields used by donation_history."""
+    if not body.get("last_donation_date"):
+        return body
+    now = now or datetime.now(timezone.utc)
+    today = now.date()
+    last = _parse_date(body["last_donation_date"], "Last donation date", today)
+    count = body.get("prior_donation_count")
+    if count in (None, 0):
+        count = 1
+    first = _parse_date(body["first_donation_date"], "First donation date", today) if body.get("first_donation_date") else None
+    if first is None:
+        if count > 1:
+            raise ValueError("Enter the approximate date of your first donation")
+        first = last
+    if first > last:
+        raise ValueError("The first donation cannot be more recent than the last donation")
+    months = lambda day: (today - day).days / DAYS_PER_MONTH
+    return {**body, "prior_donation_count": count,
+            "months_since_last_donation": months(last), "months_since_first_donation": months(first)}
+
+
+def clean_phone(value, required=True):
+    if value in (None, "") and not required:
+        return ""
+    if not isinstance(value, str) or not re.fullmatch(r"\+?[0-9][0-9 \-]{6,18}[0-9]", value.strip()):
+        raise ValueError("Enter a valid contact phone number (digits, spaces, dashes, optional +)")
+    return value.strip()
+
+
+def clean_email(value):
+    if value in (None, ""):
+        return ""
+    if not isinstance(value, str) or len(value) > 120 or not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", value.strip()):
+        raise ValueError("Enter a valid email address or leave it empty")
+    return value.strip()
+
+
+def last_donation(donor, donation_state):
+    """Most recent known donation (self-reported or recorded in this system) and total count."""
+    history = donor.get("donation_history") or {}
+    times = [datetime.fromisoformat(history["last_donation_at"])] if history.get("last_donation_at") else []
+    recorded = list(donation_state.completed_donations) if donation_state else []
+    times += [record.completed_at for record in recorded]
+    return {"last_donation_at": max(times).isoformat() if times else None,
+            "total_donations": int(history.get("prior_donations", 0)) + len(recorded),
+            "donations_recorded_in_app": len(recorded)}
+
+
 def new_donor(body):
     username = body.get("username")
     name = body.get("name")
@@ -71,25 +151,44 @@ def new_donor(body):
         raise ValueError("Enter a name with 2–100 characters")
     if body.get("blood_type") not in BLOOD_TYPES:
         raise ValueError("Select a valid blood group")
-    return {"user_id": username, "role": "donor", "name": name.strip(),
-            "blood_type": body["blood_type"], "phone": "", "latitude": None,
-            "longitude": None, "availability": False, "recent_alerts": 0,
-            "account_source": "registered", "location_consent": False,
-            "donation_history": donation_history(body),
-            "password_record": password_record(body.get("password"))}
+    phone = clean_phone(body.get("phone"))
+    email = clean_email(body.get("email"))
+    history = donation_history(history_from_dates(body))
+    donor = {"user_id": username, "role": "donor", "name": name.strip(),
+             "blood_type": body["blood_type"], "phone": phone, "email": email, "latitude": None,
+             "longitude": None, "availability": False, "recent_alerts": 0,
+             "account_source": "registered", "location_consent": False,
+             "donation_history": history,
+             "registered_at": datetime.now(timezone.utc).isoformat(),
+             "password_record": password_record(body.get("password"))}
+    if isinstance(body.get("location"), dict):
+        update_location(donor, {**body["location"], "consent": True})
+    return donor
 
 
 def location_ready(donor, now=None):
-    # Legacy accounts are explicitly synthetic; never require real device GPS for them.
+    """True when the donor has a consented location that matching can use.
+
+    Registered donors keep their last shared location (live GPS or a point they
+    picked on the map) until they revoke it; its age is reported separately so
+    staff can judge it. Acceptance refreshes the location when the device allows.
+    """
+    if donor.get("latitude") is None or donor.get("longitude") is None:
+        return False
+    # Legacy demo accounts are explicitly synthetic; they never share real device GPS.
     if donor.get("account_source") != "registered":
-        return donor.get("latitude") is not None and donor.get("longitude") is not None
-    if not donor.get("location_consent"):
+        return True
+    return bool(donor.get("location_consent"))
+
+
+def location_fresh(donor, now=None):
+    """Live device fix captured within MAX_LOCATION_AGE_SECONDS."""
+    if not location_ready(donor) or donor.get("location_source", "device") != "device":
         return False
     try:
         captured = datetime.fromisoformat(donor["location_captured_at"])
         age = ((now or datetime.now(timezone.utc)) - captured).total_seconds()
-        accuracy = donor["location_accuracy_meters"]
-        return 0 <= age <= MAX_LOCATION_AGE_SECONDS and 0 <= accuracy <= MAX_ACCURACY_METERS
+        return 0 <= age <= MAX_LOCATION_AGE_SECONDS
     except (KeyError, ValueError, TypeError):
         return False
 
@@ -98,11 +197,19 @@ def update_location(donor, body, now=None):
     now = now or datetime.now(timezone.utc)
     if body.get("consent") is not True:
         raise ValueError("Explicit location-sharing consent is required")
-    values = [body.get(k) for k in ("latitude", "longitude", "accuracy_meters")]
+    source = body.get("source", "device")
+    if source not in LOCATION_SOURCES:
+        raise ValueError("Location source must be device or manual")
+    if source == "manual" and body.get("accuracy_meters") is None:
+        body = {**body, "accuracy_meters": None}
+        values = [body.get(k) for k in ("latitude", "longitude")]
+    else:
+        values = [body.get(k) for k in ("latitude", "longitude", "accuracy_meters")]
     if any(type(v) not in (int, float) or not math.isfinite(v) for v in values):
         raise ValueError("Coordinates and accuracy must be finite numbers")
-    lat, lon, accuracy = values
-    if not -90 <= lat <= 90 or not -180 <= lon <= 180 or not 0 <= accuracy <= MAX_ACCURACY_METERS:
+    lat, lon, accuracy = body.get("latitude"), body.get("longitude"), body.get("accuracy_meters")
+    if not -90 <= lat <= 90 or not -180 <= lon <= 180 or (
+            accuracy is not None and not 0 <= accuracy <= MAX_ACCURACY_METERS):
         raise ValueError("Invalid coordinates or location accuracy exceeds 250 metres")
     try:
         captured = datetime.fromisoformat(body["captured_at"].replace("Z", "+00:00"))
@@ -116,7 +223,7 @@ def update_location(donor, body, now=None):
         raise ValueError("An older location cannot replace a newer location")
     donor.update(latitude=lat, longitude=lon, location_accuracy_meters=accuracy,
                  location_captured_at=captured.isoformat(), location_received_at=now.isoformat(),
-                 location_consent=True, location_source="device", availability=True)
+                 location_consent=True, location_source=source, availability=True)
 
 
 def revoke_location(donor):

@@ -140,7 +140,8 @@ def test_profile_and_recommendations_expose_propensity(api_server):
     staff = login(api_server, "staff_001")
     recs = request(api_server, "emergency/recommendations?request_id=REQ_TRAUMA_101", token=staff)[1]
     assert recs["recommendations"]
-    assert all(0 < r["donation_propensity"] < 1 for r in recs["recommendations"])
+    assert all(0 < r["donation_likelihood"] < 1 for r in recs["recommendations"])
+    assert all(0 < r["match_score"] < 1 for r in recs["recommendations"])
 
 
 def test_registration_and_history_update(api_server):

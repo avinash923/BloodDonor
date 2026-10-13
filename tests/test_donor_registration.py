@@ -1,18 +1,18 @@
-"""Donor account isolation, freshness, consent and facility import regression checks."""
+"""Donor account isolation, location consent, contact details and facility import regression checks."""
 from datetime import datetime, timedelta, timezone
 import json
 
 import pytest
 
 import src.api.server as api
-from src.api.donor_accounts import location_ready, update_location
+from src.api.donor_accounts import location_fresh, location_ready, update_location
 from tests.test_api_server import api_server, request, login, create
 
 
 def register(base, **overrides):
     return request(base, 'auth/register', 'POST', body={
         'username': 'new_donor', 'name': 'New Donor', 'password': 'a-long-test-password',
-        'blood_type': 'O+', **overrides})
+        'blood_type': 'O+', 'phone': '+91 90000 00000', **overrides})
 
 
 def fix(**overrides):
@@ -44,6 +44,10 @@ def test_registration_password_privacy_and_persistence(api_server, tmp_path):
 @pytest.mark.parametrize('fields', [
     {'username': 'staff_hacker'}, {'username': []}, {'username': 'bad'},
     {'name': ''}, {'password': 'short'}, {'blood_type': 'unknown'},
+    {'phone': ''}, {'phone': 'call me'}, {'email': 'not-an-email'},
+    {'last_donation_date': '2999-01-01'}, {'last_donation_date': '12/01/2025'},
+    {'prior_donation_count': 3, 'last_donation_date': '2026-01-01'},
+    {'prior_donation_count': 3, 'last_donation_date': '2026-01-01', 'first_donation_date': '2026-05-01'},
 ])
 def test_invalid_registration(api_server, fields):
     assert register(api_server, **fields)[0] == 400
@@ -69,6 +73,7 @@ def test_location_is_owned_consented_and_revocable(api_server):
     {'captured_at': 'bad'}, {'captured_at': '2026-10-12T10:00:00'},
     {'captured_at': (datetime.now(timezone.utc) - timedelta(minutes=10)).isoformat()},
     {'captured_at': (datetime.now(timezone.utc) + timedelta(minutes=1)).isoformat()},
+    {'source': 'satellite'}, {'source': 'manual', 'latitude': None},
 ])
 def test_bad_location_is_rejected_without_overwriting(fields):
     donor = {'account_source': 'registered', 'latitude': None}
@@ -77,34 +82,67 @@ def test_bad_location_is_rejected_without_overwriting(fields):
     assert donor['latitude'] is None
 
 
-def test_freshness_prefilter_and_acceptance_recheck(api_server, monkeypatch):
+def test_registration_with_contact_history_and_location(api_server):
+    today = datetime.now(timezone.utc).date()
+    status, account = register(api_server, email='donor@example.org', prior_donation_count=3,
+                                last_donation_date=(today - timedelta(days=30)).isoformat(),
+                                first_donation_date=(today - timedelta(days=900)).isoformat(),
+                                location={'latitude': 12.98, 'longitude': 77.59, 'source': 'manual',
+                                          'captured_at': datetime.now(timezone.utc).isoformat()})
+    assert status == 201
+    profile = request(api_server, 'donor/profile', token=account['token'])[1]
+    assert profile['phone'] == '+91 90000 00000' and profile['email'] == 'donor@example.org'
+    assert profile['total_donations'] == 3 and profile['last_donation_at'].startswith(str(today - timedelta(days=30)))
+    assert profile['location_ready'] and profile['location_source'] == 'manual' and not profile['location_live']
+    # A self-reported donation 30 days ago defers the donor (registered policy: 120 days).
+    assert not profile['is_temporally_eligible']
+    assert profile['donation_propensity']['available']
+
+
+def test_location_sweep_and_acceptance_recheck(api_server, monkeypatch):
     token = register(api_server)[1]['token']
     staff = login(api_server, 'staff_001')
     api.STATE.users['donor_001']['availability'] = False
     _, emergency = create(api_server, staff)
-    assert emergency['recruitment']['status'] == 'EXHAUSTED'
+    assert emergency['invited_count'] == 0 and emergency['recruitment']['status'] == 'WAITING_FOR_DONORS'
     assert request(api_server, 'donor/location', 'POST', token, fix())[0] == 200
-    invitations = request(api_server, 'donor/invitations', token=token)[1]['invitations']
-    assert len(invitations) == 1  # Newly available donor wakes the exhausted request.
+    invitations = [i for i in request(api_server, 'donor/invitations', token=token)[1]['invitations']
+                   if i['request_id'] == emergency['request_id']]
+    assert len(invitations) == 1  # Sharing a location invites the donor to the open request.
     donor = api.STATE.users['new_donor']
     captured = datetime.fromisoformat(donor['location_captured_at'])
-    assert location_ready(donor, captured + timedelta(minutes=14))
-    assert not location_ready(donor, captured + timedelta(minutes=16))
-    donor['location_captured_at'] = (captured - timedelta(minutes=16)).isoformat()
-    assert request(api_server, 'donor/invitations/respond', 'POST', token,
-                   {'invitation_id': invitations[0]['invitation_id'], 'action': 'ACCEPT'})[0] == 409
-    assert request(api_server, 'donor/location', 'POST', token, fix())[0] == 200
-    assert request(api_server, 'donor/invitations/respond', 'POST', token,
-                   {'invitation_id': invitations[0]['invitation_id'], 'action': 'ACCEPT'})[0] == 200
+    assert location_fresh(donor, captured + timedelta(minutes=14))
+    assert not location_fresh(donor, captured + timedelta(minutes=16))
+    assert location_ready(donor, captured + timedelta(days=3))  # last known location is still usable
+    respond = lambda body: request(api_server, 'donor/invitations/respond', 'POST', token,
+                                   {'invitation_id': invitations[0]['invitation_id'], **body})
+    # Accepting from far away (fresh fix sent with the acceptance) is rejected: cannot arrive in time.
+    far = fix(latitude=28.6, longitude=77.2)
+    assert respond({'action': 'ACCEPT', 'location': far})[0] == 409
+    assert donor['latitude'] == 28.6
+    assert respond({'action': 'ACCEPT', 'location': fix()})[0] == 200
     # A faraway location must be filtered before routing is invoked for that donor.
     donor.update(latitude=28.6, longitude=77.2)
     seen = []
-    def routes(candidates, coords, **kwargs):
-        seen.extend(coords)
-        return []
-    monkeypatch.setattr(api.STATE.routing_service, 'populate_candidates_with_etas', routes)
-    api.STATE.recruitment.rank(emergency, datetime.now(timezone.utc))
+    def routes(donors, **kwargs):
+        seen.extend(d for d, _, _ in donors)
+        return {}
+    monkeypatch.setattr(api.STATE.routing_service, 'compute_donor_etas', routes)
+    api.STATE.recruitment.evaluate(emergency, datetime.now(timezone.utc))
     assert 'new_donor' not in seen
+
+
+def test_unavailable_donor_invitations_close(api_server):
+    token = register(api_server)[1]['token']
+    assert request(api_server, 'donor/location', 'POST', token, fix())[0] == 200
+    staff = login(api_server, 'staff_001')
+    created = create(api_server, staff)[1]
+    assert created['invited_count'] == 2
+    assert request(api_server, 'donor/profile', 'POST', token, {'available': False})[0] == 200
+    mine = [i for i in api.STATE.invitations if i['donor_id'] == 'new_donor']
+    assert mine and all(i['status'] == 'CANCELLED' for i in mine)
+    assert request(api_server, 'donor/profile', 'POST', token, {'phone': 'x'})[0] == 400
+    assert request(api_server, 'donor/profile', 'POST', token, {'available': True})[0] == 200
 
 
 def test_directory_access_and_request_coordinates(api_server):

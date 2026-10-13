@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LifePulse AI — Emergency Blood Recommendation & Dynamic Recruitment</title>
-  <meta name="description" content="AI-based time-aware emergency blood donor recommendation and dynamic recruitment system with real-time UDI scoring, XGBoost return propensity, and spatial routing.">
+  <title>LifePulse — Emergency Blood Donor Matching</title>
+  <meta name="description" content="Doctors raise emergency blood requests with a time limit; every compatible nearby donor is alerted at once and ranked by road travel time and predicted likelihood to donate.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="theme-dark">
-  <!-- Top Navigation Bar -->
   <header class="app-header">
     <div class="header-container">
       <div class="brand-group">
@@ -22,619 +21,552 @@
           </svg>
         </div>
         <div>
-          <h1 class="brand-title">LifePulse <span class="badge-pill pulse-badge">AI</span></h1>
-          <p class="brand-subtitle">Time-Aware Emergency Blood Recommendation & Dynamic Recruitment</p>
+          <h1 class="brand-title">LifePulse</h1>
+          <p class="brand-subtitle">Emergency blood donor matching</p>
         </div>
       </div>
 
       <nav class="nav-links" id="main-nav" style="display: none;">
-        <button id="nav-btn-dashboard" class="nav-btn active" onclick="switchTab('dashboard')">
-          <span class="nav-icon">📊</span> Desk / Portal
+        <button id="nav-btn-dashboard" class="nav-btn active" data-tab="dashboard">
+          <span class="nav-icon">📊</span> <span id="nav-dashboard-label">Dashboard</span>
         </button>
-        <button id="nav-btn-directory" class="nav-btn" onclick="switchTab('directory')">
-          <span class="nav-icon">🏥</span> Blood Banks (2,947)
+        <button id="nav-btn-directory" class="nav-btn staff-only" data-tab="directory">
+          <span class="nav-icon">🏥</span> Blood Banks
         </button>
-        <button id="nav-btn-system" class="nav-btn" onclick="switchTab('system')">
-          <span class="nav-icon">⚙️</span> Engine Telemetry
+        <button id="nav-btn-system" class="nav-btn staff-only" data-tab="system">
+          <span class="nav-icon">⚙️</span> System
         </button>
       </nav>
 
       <div class="user-controls">
-        <div id="system-status-pill" class="status-pill status-healthy" title="Backend Status">
+        <div id="system-status-pill" class="status-pill status-healthy" title="Backend status">
           <span class="status-dot"></span>
-          <span id="system-status-text">Live UDI Engine</span>
+          <span id="system-status-text">Connecting…</span>
         </div>
-
         <div id="user-badge" class="user-badge" style="display: none;">
-          <span class="user-role-tag" id="current-user-role">STAFF</span>
-          <span class="user-name" id="current-user-name">Dr. Patel</span>
-          <button class="logout-btn" onclick="handleLogout()" title="Sign Out">Sign Out</button>
+          <span class="user-role-tag" id="current-user-role">DOCTOR</span>
+          <span class="user-name" id="current-user-name"></span>
+          <button class="logout-btn" id="btn-logout" title="Sign out">Sign Out</button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Notification Banner / Toast Container -->
   <aside id="toast-container" class="toast-container" aria-live="polite"></aside>
 
-  <!-- Main Application Body -->
   <main class="app-main">
 
-    <!-- ================================================================ -->
-    <!-- VIEW 1: AUTHENTICATION & REGISTRATION SCREEN                     -->
-    <!-- ================================================================ -->
+    <!-- ============================== AUTH ============================== -->
     <section id="view-auth" class="auth-view active-view">
       <div class="auth-container">
         <div class="auth-hero">
-          <div class="hero-badge">Full Live Production System</div>
-          <h2 class="hero-title">Rapid Response Emergency Blood Matching</h2>
+          <div class="hero-badge">Live donor matching</div>
+          <h2 class="hero-title">Get blood to the patient before the deadline</h2>
           <p class="hero-desc">
-            Powered by the <strong>Urgency-Discounted Isochrone (UDI)</strong> mathematical engine,
-            real-time traffic estimation, dynamic 10-donor invitation waves, and calibrated 
-            <strong>UCI XGBoost</strong> return-propensity machine learning.
+            A doctor raises a request and sets the time limit. Every donor with a matching blood group who can
+            reach the hospital in time is alerted at once. Donors are ranked by road travel time and by their
+            predicted likelihood to donate, and the doctor sees each donor who accepts — with name, contact
+            number and last donation.
           </p>
-
           <div class="hero-stats-grid">
             <div class="hero-stat-card">
-              <span class="stat-number">2,947</span>
-              <span class="stat-label">Blood Banks Mapped</span>
+              <span class="stat-number" id="hero-facilities">2,947</span>
+              <span class="stat-label">Blood banks in directory</span>
             </div>
             <div class="hero-stat-card">
-              <span class="stat-number">10 Donors</span>
-              <span class="stat-label">Dynamic Wave Size</span>
+              <span class="stat-number">All</span>
+              <span class="stat-label">Matching donors alerted at once</span>
             </div>
             <div class="hero-stat-card">
-              <span class="stat-number">0.749</span>
-              <span class="stat-label">XGBoost ROC-AUC</span>
+              <span class="stat-number">OSM</span>
+              <span class="stat-label">Free OpenStreetMap maps &amp; road routing</span>
             </div>
             <div class="hero-stat-card">
-              <span class="stat-number">90 Days</span>
-              <span class="stat-label">Safety Deferral Policy</span>
+              <span class="stat-number" id="hero-donors">—</span>
+              <span class="stat-label">Registered donors</span>
             </div>
           </div>
         </div>
 
         <div class="auth-card">
-          <!-- Auth Mode Tabs -->
           <div class="auth-tabs">
-            <button id="auth-tab-login" class="auth-tab active" onclick="setAuthMode('login')">Sign In</button>
-            <button id="auth-tab-register" class="auth-tab" onclick="setAuthMode('register')">Register as Donor</button>
+            <button id="auth-tab-login" class="auth-tab active" data-auth="login">Sign In</button>
+            <button id="auth-tab-register" class="auth-tab" data-auth="register">Register as Donor</button>
           </div>
 
-          <!-- SIGN IN FORM -->
-          <form id="form-login" class="auth-form" onsubmit="handleLoginSubmit(event)">
+          <form id="form-login" class="auth-form">
             <div class="form-group">
-              <label for="login-username">Username or User ID</label>
-              <div class="input-wrapper">
-                <input type="text" id="login-username" placeholder="e.g. staff_001 or registered username" required autocomplete="username">
-              </div>
+              <label for="login-username">Username</label>
+              <input type="text" id="login-username" placeholder="Your username" required autocomplete="username">
             </div>
-
             <div class="form-group">
-              <label for="login-password">
-                Password 
-                <span class="label-hint">(Required for registered accounts)</span>
-              </label>
-              <div class="input-wrapper">
-                <input type="password" id="login-password" placeholder="Enter password" autocomplete="current-password">
-              </div>
+              <label for="login-password">Password <span class="label-hint">(required for registered accounts)</span></label>
+              <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
             </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
 
-            <button type="submit" id="btn-login-submit" class="btn btn-primary btn-block">
-              <span class="btn-text">Authenticate & Enter</span>
-            </button>
-
-            <!-- Quick Demo Accounts for Testing -->
-            <div class="quick-accounts">
-              <p class="quick-title">Quick Access Credentials:</p>
-              <div class="quick-buttons">
-                <button type="button" class="btn-chip" onclick="quickFillLogin('staff_001', 'HospitalStaff@2026')">
-                  🏥 Hospital Staff (Dr. Patel)
-                </button>
-                <button type="button" class="btn-chip" onclick="quickFillLogin('donor_001', '')">
-                  🩸 Donor: Sarah Chen (O+)
-                </button>
-                <button type="button" class="btn-chip" onclick="quickFillLogin('donor_002', '')">
-                  🩸 Donor: Rahul Sharma (A+)
-                </button>
-              </div>
+            <div class="quick-accounts" id="quick-accounts" style="display:none;">
+              <p class="quick-title">Demo accounts:</p>
+              <div class="quick-buttons" id="quick-buttons"></div>
             </div>
           </form>
 
-          <!-- DONOR REGISTRATION FORM -->
-          <form id="form-register" class="auth-form" style="display: none;" onsubmit="handleRegisterSubmit(event)">
+          <form id="form-register" class="auth-form" style="display: none;">
             <div class="form-row">
               <div class="form-group">
                 <label for="reg-username">Username</label>
-                <input type="text" id="reg-username" placeholder="e.g. arun_kumar" required pattern="[a-z][a-z0-9_]{3,39}" title="4-40 lowercase letters, numbers or underscores">
+                <input type="text" id="reg-username" placeholder="e.g. arun_kumar" required pattern="[a-z][a-z0-9_]{3,39}" title="4–40 lowercase letters, numbers or underscores, starting with a letter" autocomplete="username">
               </div>
               <div class="form-group">
-                <label for="reg-bloodtype">Blood Group</label>
+                <label for="reg-bloodtype">Blood group</label>
                 <select id="reg-bloodtype" required>
-                  <option value="" disabled selected>Select Group</option>
-                  <option value="O+">O+ (Universal RBC Red Cross)</option>
-                  <option value="O-">O- (Universal Donor)</option>
-                  <option value="A+">A+</option>
-                  <option value="A-">A-</option>
-                  <option value="B+">B+</option>
-                  <option value="B-">B-</option>
-                  <option value="AB+">AB+ (Universal Plasma)</option>
-                  <option value="AB-">AB-</option>
+                  <option value="" disabled selected>Select</option>
+                  <option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+                  <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
                 </select>
               </div>
             </div>
-
             <div class="form-group">
-              <label for="reg-fullname">Full Name</label>
-              <input type="text" id="reg-fullname" placeholder="e.g. Arun Kumar" required minlength="2" maxlength="100">
+              <label for="reg-fullname">Full name</label>
+              <input type="text" id="reg-fullname" placeholder="e.g. Arun Kumar" required minlength="2" maxlength="100" autocomplete="name">
             </div>
-
+            <div class="form-row">
+              <div class="form-group">
+                <label for="reg-phone">Mobile number</label>
+                <input type="tel" id="reg-phone" placeholder="+91 98765 43210" required autocomplete="tel">
+              </div>
+              <div class="form-group">
+                <label for="reg-email">Email <span class="label-hint">(optional)</span></label>
+                <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
+              </div>
+            </div>
             <div class="form-group">
               <label for="reg-password">Password (10–128 characters)</label>
-              <input type="password" id="reg-password" placeholder="Create a secure password" required minlength="10" maxlength="128">
+              <input type="password" id="reg-password" required minlength="10" maxlength="128" autocomplete="new-password">
             </div>
 
-            <!-- Optional ML Propensity History -->
             <fieldset class="form-fieldset">
-              <legend>Donation History (UCI XGBoost Propensity Model)</legend>
+              <legend>Previous donations</legend>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="reg-prior-count">Prior Donations</label>
+                  <label for="reg-prior-count">How many times have you donated?</label>
                   <input type="number" id="reg-prior-count" min="0" max="200" value="0">
                 </div>
                 <div class="form-group">
-                  <label for="reg-months-last">Months Since Last</label>
-                  <input type="number" id="reg-months-last" min="0" max="720" placeholder="Optional">
+                  <label for="reg-last-date">Last donation date</label>
+                  <input type="date" id="reg-last-date">
                 </div>
-                <div class="form-group">
-                  <label for="reg-months-first">Months Since 1st</label>
-                  <input type="number" id="reg-months-first" min="0" max="720" placeholder="Optional">
+              </div>
+              <div class="form-group" id="reg-first-date-group" style="display:none;">
+                <label for="reg-first-date">First donation date (approximate)</label>
+                <input type="date" id="reg-first-date">
+              </div>
+              <p class="field-help">Donors who gave blood recently are not alerted until the safe donation interval has passed.</p>
+            </fieldset>
+
+            <fieldset class="form-fieldset">
+              <legend>Your location</legend>
+              <label class="checkbox-row">
+                <input type="checkbox" id="reg-location-consent">
+                <span>Share my location so nearby hospitals can alert me (you can stop any time)</span>
+              </label>
+              <div id="reg-location-tools" style="display:none;">
+                <div class="inline-actions">
+                  <button type="button" class="btn btn-sm btn-ghost" id="reg-use-gps">📍 Use my current GPS</button>
+                  <input type="text" id="reg-address" placeholder="…or search an address / area">
+                  <button type="button" class="btn btn-sm btn-ghost" id="reg-address-search">Search</button>
                 </div>
+                <div id="reg-address-results" class="search-results"></div>
+                <div id="reg-map" class="map-container map-small"></div>
+                <p class="field-help" id="reg-location-label">Tap the map to place your location.</p>
               </div>
             </fieldset>
 
-            <button type="submit" id="btn-register-submit" class="btn btn-accent btn-block">
-              <span class="btn-text">Create Account & Register</span>
-            </button>
+            <button type="submit" class="btn btn-accent btn-block">Create Donor Account</button>
           </form>
         </div>
       </div>
     </section>
 
-    <!-- ================================================================ -->
-    <!-- VIEW 2: HOSPITAL STAFF DISPATCH DESK                             -->
-    <!-- ================================================================ -->
+    <!-- ============================== DOCTOR DESK ============================== -->
     <section id="view-staff" class="portal-view" style="display: none;">
       <div class="portal-header">
         <div>
-          <h2 class="view-title">Emergency Blood Dispatch Desk</h2>
-          <p class="view-subtitle">Monitor clinical demand, dispatch automated wave recruitments, and confirm completed transfusions.</p>
+          <h2 class="view-title">Doctor's Emergency Desk</h2>
+          <p class="view-subtitle">Raise a request, see who accepted, and confirm donations. Updates every few seconds.</p>
         </div>
-        <button class="btn btn-primary" onclick="openNewRequestModal()">
-          <span class="btn-icon">🚨</span> Create Emergency Request
-        </button>
+        <button class="btn btn-primary" id="btn-new-request">🚨 Raise Blood Request</button>
       </div>
 
-      <!-- Staff KPI Metric Cards -->
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-icon icon-critical">⚠️</div>
-          <div class="kpi-content">
-            <span class="kpi-value" id="kpi-active-requests">0</span>
-            <span class="kpi-label">Active Emergencies</span>
-          </div>
+          <div class="kpi-content"><span class="kpi-value" id="kpi-active-requests">0</span><span class="kpi-label">Open requests</span></div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-icon icon-success">✅</div>
-          <div class="kpi-content">
-            <span class="kpi-value" id="kpi-fulfilled-units">0</span>
-            <span class="kpi-label">Units Fulfilled</span>
-          </div>
+          <div class="kpi-icon icon-success">🙋</div>
+          <div class="kpi-content"><span class="kpi-value" id="kpi-accepted">0</span><span class="kpi-label">Donors on the way</span></div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-icon icon-primary">👥</div>
-          <div class="kpi-content">
-            <span class="kpi-value" id="kpi-registered-donors">0</span>
-            <span class="kpi-label">Registered Donors</span>
-          </div>
+          <div class="kpi-icon icon-primary">🩸</div>
+          <div class="kpi-content"><span class="kpi-value" id="kpi-fulfilled-units">0</span><span class="kpi-label">Units donated</span></div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-icon icon-info">🗺️</div>
-          <div class="kpi-content">
-            <span class="kpi-value" id="kpi-routing-engine">Synthetic</span>
-            <span class="kpi-label">Spatial Provider</span>
-          </div>
+          <div class="kpi-icon icon-info">👥</div>
+          <div class="kpi-content"><span class="kpi-value" id="kpi-registered-donors">0</span><span class="kpi-label">Registered donors</span></div>
         </div>
       </div>
 
-      <!-- Emergency Requests Table -->
       <div class="panel-card">
         <div class="panel-header">
-          <h3 class="panel-title">Active Emergency Triage Alerts</h3>
-          <button class="btn btn-sm btn-ghost" onclick="fetchStaffRequests()">🔄 Refresh</button>
+          <h3 class="panel-title">Blood Requests</h3>
+          <span class="live-indicator"><span class="status-dot"></span> Live</span>
         </div>
         <div class="table-responsive">
-          <table class="data-table" id="emergency-requests-table">
+          <table class="data-table">
             <thead>
               <tr>
-                <th>Request ID</th>
-                <th>Hospital Facility</th>
-                <th>Blood Type</th>
-                <th>Demand</th>
-                <th>Urgency Tier</th>
-                <th>Status</th>
-                <th>Wave Progress</th>
-                <th>Actions</th>
+                <th>Request</th><th>Hospital</th><th>Blood</th><th>Units</th>
+                <th>Time left</th><th>Donors</th><th>Status</th><th></th>
               </tr>
             </thead>
             <tbody id="emergency-requests-body">
-              <tr>
-                <td colspan="8" class="text-center text-muted py-4">No active emergency requests. Click "Create Emergency Request" to begin.</td>
-              </tr>
+              <tr><td colspan="8" class="text-center text-muted py-4">No requests yet. Click “Raise Blood Request”.</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- ================================================================ -->
-    <!-- VIEW 3: DONOR PERSONAL PORTAL                                    -->
-    <!-- ================================================================ -->
+    <!-- ============================== DONOR PORTAL ============================== -->
     <section id="view-donor" class="portal-view" style="display: none;">
       <div class="portal-header">
         <div>
-          <h2 class="view-title">Donor Rescue Portal</h2>
-          <p class="view-subtitle">Your personal emergency response dashboard, live location consent, and clinical eligibility status.</p>
+          <h2 class="view-title">Donor Portal</h2>
+          <p class="view-subtitle">Emergency alerts from nearby hospitals appear here instantly while this page is open.</p>
         </div>
-        <div class="donor-quick-status" id="donor-quick-status">
-          <span class="badge-pill badge-success" id="donor-eligibility-badge">Temporally Eligible</span>
-        </div>
-      </div>
-
-      <!-- Donor Overview Grid -->
-      <div class="grid-2col">
-        <!-- Profile & Health Passport -->
-        <div class="panel-card">
-          <div class="panel-header">
-            <h3 class="panel-title">Donor Health & Blood Passport</h3>
-            <span class="blood-type-display" id="donor-profile-bloodtype">O+</span>
-          </div>
-          <div class="passport-details">
-            <div class="detail-row">
-              <span class="detail-label">Donor Name:</span>
-              <span class="detail-value" id="donor-profile-name">—</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Donor ID:</span>
-              <span class="detail-value" id="donor-profile-id">—</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Total Verified Donations:</span>
-              <span class="detail-value" id="donor-profile-donations">0 units</span>
-            </div>
-            <div class="detail-row">
-              <span class="detail-label">Safety Deferral Status:</span>
-              <span class="detail-value" id="donor-deferral-reason">Eligible for emergency call</span>
-            </div>
-            <div class="detail-row" id="donor-next-eligible-row" style="display: none;">
-              <span class="detail-label">Next Eligible Donation:</span>
-              <span class="detail-value text-accent" id="donor-next-eligible-date">—</span>
-            </div>
-          </div>
-
-          <!-- UCI XGBoost Propensity Widget -->
-          <div class="propensity-box">
-            <div class="propensity-header">
-              <span class="propensity-title">UCI XGBoost Return Propensity</span>
-              <span class="propensity-score" id="donor-propensity-score">—%</span>
-            </div>
-            <div class="progress-bar-bg">
-              <div class="progress-bar-fill" id="donor-propensity-bar" style="width: 0%;"></div>
-            </div>
-            <p class="propensity-caption">
-              Calibrated machine-learning return likelihood trained on the UCI Blood Transfusion Service Center cohort (ROC-AUC 0.749).
-            </p>
-          </div>
-        </div>
-
-        <!-- Live Foreground Location Sharing -->
-        <div class="panel-card">
-          <div class="panel-header">
-            <h3 class="panel-title">Foreground GPS Location Sharing</h3>
-            <span class="badge-pill" id="donor-location-status-badge">Not Shared</span>
-          </div>
-          <p class="panel-desc">
-            Emergency matching requires a location snapshot captured within <strong>15 minutes</strong> with accuracy within <strong>250 metres</strong>. Coordinates are never tracked in the background.
-          </p>
-
-          <div class="location-metrics">
-            <div class="location-metric">
-              <span class="label">Latitude</span>
-              <span class="val" id="donor-current-lat">—</span>
-            </div>
-            <div class="location-metric">
-              <span class="label">Longitude</span>
-              <span class="val" id="donor-current-lon">—</span>
-            </div>
-            <div class="location-metric">
-              <span class="label">Accuracy</span>
-              <span class="val" id="donor-current-accuracy">—</span>
-            </div>
-          </div>
-
-          <div class="location-actions">
-            <button class="btn btn-primary" id="btn-share-location" onclick="handleShareLocation()">
-              📍 Share / Refresh Device GPS
-            </button>
-            <button class="btn btn-ghost" id="btn-revoke-location" onclick="handleRevokeLocation()">
-              🚫 Revoke Location
-            </button>
-          </div>
+        <div class="header-actions">
+          <button class="btn btn-sm btn-ghost" id="btn-enable-alerts">🔔 Enable alert sound &amp; notifications</button>
+          <span class="badge-pill badge-success" id="donor-eligibility-badge">Eligible</span>
         </div>
       </div>
 
-      <!-- Active Emergency Invitations Panel -->
-      <div class="panel-card mt-4">
+      <div class="panel-card mb-4">
         <div class="panel-header">
-          <h3 class="panel-title">Live Emergency Dispatch Invitations</h3>
-          <span class="badge-pill pulse-badge" id="invitation-count-badge">0 Pending</span>
+          <h3 class="panel-title">Emergency Alerts</h3>
+          <span class="badge-pill" id="invitation-count-badge">0 new</span>
         </div>
         <div id="donor-invitations-container">
-          <div class="empty-state">
-            <span class="empty-icon">🔔</span>
-            <p>No active emergency invitations right now. Keep your location updated to stay available for local emergency waves.</p>
+          <div class="empty-state"><span class="empty-icon">🔔</span><p>No emergency alerts right now.</p></div>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3 class="panel-title">My Profile</h3>
+            <span class="blood-type-display" id="donor-profile-bloodtype">—</span>
           </div>
+          <div class="passport-details">
+            <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value" id="donor-profile-name">—</span></div>
+            <div class="detail-row"><span class="detail-label">Username</span><span class="detail-value" id="donor-profile-id">—</span></div>
+            <div class="detail-row"><span class="detail-label">Mobile</span><span class="detail-value" id="donor-profile-phone">—</span></div>
+            <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value" id="donor-profile-email">—</span></div>
+            <div class="detail-row"><span class="detail-label">Total donations</span><span class="detail-value" id="donor-profile-donations">0</span></div>
+            <div class="detail-row"><span class="detail-label">Last donation</span><span class="detail-value" id="donor-profile-last">—</span></div>
+            <div class="detail-row" id="donor-next-eligible-row" style="display: none;"><span class="detail-label">Can donate again from</span><span class="detail-value text-accent" id="donor-next-eligible-date">—</span></div>
+          </div>
+          <label class="switch-row">
+            <input type="checkbox" id="donor-available-toggle">
+            <span>Available for emergency alerts</span>
+          </label>
+          <details class="edit-details">
+            <summary>Edit contact &amp; donation history</summary>
+            <form id="form-donor-edit" class="auth-form">
+              <div class="form-row">
+                <div class="form-group"><label for="edit-phone">Mobile</label><input type="tel" id="edit-phone"></div>
+                <div class="form-group"><label for="edit-email">Email</label><input type="email" id="edit-email"></div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label for="edit-prior-count">Donations before joining</label><input type="number" id="edit-prior-count" min="0" max="200"></div>
+                <div class="form-group"><label for="edit-last-date">Last donation date</label><input type="date" id="edit-last-date"></div>
+                <div class="form-group"><label for="edit-first-date">First donation date</label><input type="date" id="edit-first-date"></div>
+              </div>
+              <button type="submit" class="btn btn-sm btn-primary">Save</button>
+            </form>
+          </details>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <h3 class="panel-title">My Location</h3>
+            <span class="badge-pill" id="donor-location-status-badge">Not shared</span>
+          </div>
+          <p class="panel-desc">
+            Hospitals only see your location after you accept an alert. Use live GPS for the most accurate travel
+            time, or pin your home/work area on the map.
+          </p>
+          <div class="location-metrics">
+            <div class="location-metric"><span class="label">Latitude</span><span class="val" id="donor-current-lat">—</span></div>
+            <div class="location-metric"><span class="label">Longitude</span><span class="val" id="donor-current-lon">—</span></div>
+            <div class="location-metric"><span class="label">Updated</span><span class="val" id="donor-current-updated">—</span></div>
+          </div>
+          <div class="location-actions">
+            <button class="btn btn-primary" id="btn-share-location">📍 Share current GPS</button>
+            <button class="btn btn-ghost" id="btn-pick-location">🗺️ Pick on map</button>
+            <button class="btn btn-ghost" id="btn-revoke-location">🚫 Stop sharing</button>
+          </div>
+          <label class="switch-row">
+            <input type="checkbox" id="donor-live-toggle">
+            <span>Keep my GPS location updated while this page is open</span>
+          </label>
         </div>
       </div>
     </section>
 
-    <!-- ================================================================ -->
-    <!-- VIEW 4: BLOOD BANK DIRECTORY (2,947 FACILITIES)                  -->
-    <!-- ================================================================ -->
+    <!-- ============================== DIRECTORY ============================== -->
     <section id="view-directory" class="portal-view" style="display: none;">
       <div class="portal-header">
         <div>
-          <h2 class="view-title">National Blood Bank Directory Explorer</h2>
-          <p class="view-subtitle">Access the verified September 2015 dataset of 2,947 Indian facilities with geocoded coordinates.</p>
-        </div>
-        <div class="search-box">
-          <input type="text" id="directory-search-input" placeholder="Search by hospital, city, or state..." oninput="handleDirectorySearch(this.value)">
+          <h2 class="view-title">Blood Bank Directory</h2>
+          <p class="view-subtitle" id="directory-subtitle">September 2015 national directory. Verify names and map positions before use.</p>
         </div>
       </div>
 
       <div class="panel-card">
+        <form class="filter-bar" id="directory-filters">
+          <input type="search" id="directory-search-input" placeholder="Search name, city, district, address or pincode">
+          <select id="directory-state"><option value="">All states</option></select>
+          <label class="checkbox-row"><input type="checkbox" id="directory-has-coords"> <span>Only with map location</span></label>
+          <button type="submit" class="btn btn-sm btn-primary">Search</button>
+        </form>
+        <div id="directory-map" class="map-container map-medium"></div>
+        <p class="text-muted small" id="directory-summary">Loading…</p>
         <div class="table-responsive">
-          <table class="data-table" id="directory-table">
+          <table class="data-table">
             <thead>
-              <tr>
-                <th>Blood Bank / Hospital</th>
-                <th>City / District</th>
-                <th>State</th>
-                <th>Coordinates</th>
-                <th>Actions</th>
-              </tr>
+              <tr><th>Blood bank / hospital</th><th>Address</th><th>District / City</th><th>State</th><th>Pincode</th><th>Map</th><th></th></tr>
             </thead>
             <tbody id="directory-tbody">
-              <tr>
-                <td colspan="5" class="text-center text-muted py-4">Loading directory records...</td>
-              </tr>
+              <tr><td colspan="7" class="text-center text-muted py-4">Loading directory…</td></tr>
             </tbody>
           </table>
         </div>
+        <div class="pager">
+          <button class="btn btn-sm btn-ghost" id="directory-prev">← Previous</button>
+          <span id="directory-page-label">Page 1</span>
+          <button class="btn btn-sm btn-ghost" id="directory-next">Next →</button>
+        </div>
       </div>
     </section>
 
-    <!-- ================================================================ -->
-    <!-- VIEW 5: ENGINE TELEMETRY & DIAGNOSTICS                           -->
-    <!-- ================================================================ -->
+    <!-- ============================== SYSTEM ============================== -->
     <section id="view-system" class="portal-view" style="display: none;">
       <div class="portal-header">
         <div>
-          <h2 class="view-title">Core Recommendation Engine Telemetry</h2>
-          <p class="view-subtitle">Live health parameters, UDI algorithm coefficients, and ML model inference metrics.</p>
+          <h2 class="view-title">System Status</h2>
+          <p class="view-subtitle">Backend health, routing and notification settings.</p>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="checkHealth()">🔄 Refresh Diagnostics</button>
+        <button class="btn btn-ghost btn-sm" id="btn-refresh-health">🔄 Refresh</button>
       </div>
-
       <div class="grid-2col">
         <div class="panel-card">
-          <h3 class="panel-title mb-3">Mathematical Engine Specifications</h3>
+          <h3 class="panel-title mb-3">How matching works</h3>
           <div class="spec-list">
-            <div class="spec-item">
-              <span class="spec-name">UDI Formulation:</span>
-              <span class="spec-val">Multiplicative <code>UDI = e<sup>-λ·t<sub>road</sub></sup> × w<sub>u</sub> × ∏(p<sub>i</sub>)</code></span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-name">Zero-ETA Safety Gate:</span>
-              <span class="spec-val text-success">Strict (None ETA = 0.0 UDI Hard Ineligibility)</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-name">Recruitment Wave Size:</span>
-              <span class="spec-val">10 Candidates per Batch</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-name">Temporal Deferral Policy:</span>
-              <span class="spec-val">90 Days Mandatory Inter-donation</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-name">Spatial Filter Isochrone:</span>
-              <span class="spec-val">50 km Straight-Line Prefilter + Road Routing</span>
-            </div>
+            <div class="spec-item"><span class="spec-name">Who is alerted</span><span class="spec-val">Every available, eligible donor with a matching blood group (or any compatible group, if the doctor allows) who can reach the hospital by road within the time limit</span></div>
+            <div class="spec-item"><span class="spec-name">Ranking</span><span class="spec-val">Predicted donation likelihood × (1 − road travel time ÷ time remaining)</span></div>
+            <div class="spec-item"><span class="spec-name">Late joiners</span><span class="spec-val">Donors who register or share a location later are alerted automatically while the request is open</span></div>
+            <div class="spec-item"><span class="spec-name">Deferral</span><span class="spec-val">Donors are not alerted until their safe donation interval has passed</span></div>
           </div>
         </div>
-
         <div class="panel-card">
-          <h3 class="panel-title mb-3">Live Service Status</h3>
+          <h3 class="panel-title mb-3">Live service status</h3>
           <div class="spec-list">
-            <div class="spec-item">
-              <span class="spec-name">Backend Health:</span>
-              <span class="spec-val text-success" id="telemetry-health">Healthy</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-name">Active Routing Provider:</span>
-              <span class="spec-val" id="telemetry-provider">Synthetic (Traffic-Aware Local Grid)</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-name">XGBoost Propensity Model:</span>
-              <span class="spec-val text-success">Loaded (models/donor_propensity_xgb.json)</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-name">External Push Webhook:</span>
-              <span class="spec-val" id="telemetry-webhook">Not Configured (In-App Only)</span>
-            </div>
-            <div class="spec-item">
-              <span class="spec-name">Blood Bank Records Loaded:</span>
-              <span class="spec-val" id="telemetry-facilities">2,947 Facilities</span>
-            </div>
+            <div class="spec-item"><span class="spec-name">Backend</span><span class="spec-val" id="telemetry-health">—</span></div>
+            <div class="spec-item"><span class="spec-name">Road routing</span><span class="spec-val" id="telemetry-provider">—</span></div>
+            <div class="spec-item"><span class="spec-name">Maps</span><span class="spec-val">OpenStreetMap tiles (Leaflet), address search via Nominatim</span></div>
+            <div class="spec-item"><span class="spec-name">Push / SMS gateway</span><span class="spec-val" id="telemetry-webhook">—</span></div>
+            <div class="spec-item"><span class="spec-name">Blood banks loaded</span><span class="spec-val" id="telemetry-facilities">—</span></div>
+            <div class="spec-item"><span class="spec-name">Registered donors</span><span class="spec-val" id="telemetry-donors">—</span></div>
           </div>
         </div>
       </div>
     </section>
-
   </main>
 
-  <!-- ================================================================== -->
-  <!-- MODAL: CREATE EMERGENCY REQUEST                                    -->
-  <!-- ================================================================== -->
+  <!-- ============================== MODAL: NEW REQUEST ============================== -->
   <div id="modal-request" class="modal-backdrop" style="display: none;">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-header">
-        <h3 class="modal-title">Create Emergency Blood Request</h3>
-        <button class="modal-close" onclick="closeModal('modal-request')">×</button>
+        <h3 class="modal-title">Raise Emergency Blood Request</h3>
+        <button class="modal-close" data-close="modal-request">×</button>
       </div>
-      <form id="form-new-request" onsubmit="handleCreateRequestSubmit(event)">
-        <div class="form-group">
-          <label for="req-bloodtype">Blood Group Required</label>
-          <select id="req-bloodtype" required>
-            <option value="O+" selected>O+ (Positive)</option>
-            <option value="O-">O- (Universal Negative)</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-          </select>
-        </div>
-
+      <form id="form-new-request">
         <div class="form-row">
           <div class="form-group">
-            <label for="req-units">Units Required</label>
-            <input type="number" id="req-units" min="1" max="20" value="1" required>
-          </div>
-          <div class="form-group">
-            <label for="req-urgency">Urgency Tier</label>
-            <select id="req-urgency" required>
-              <option value="CRITICAL" selected>CRITICAL (Golden Hour Horizon)</option>
-              <option value="HIGH">HIGH (2–4 Hour Horizon)</option>
-              <option value="MEDIUM">MEDIUM (Elective Preparation)</option>
+            <label for="req-bloodtype">Blood group needed</label>
+            <select id="req-bloodtype" required>
+              <option>O+</option><option>O-</option><option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option><option>AB+</option><option>AB-</option>
             </select>
           </div>
-        </div>
-
-        <div class="form-group">
-          <label for="req-hospital-name">Hospital / Trauma Center Name</label>
-          <input type="text" id="req-hospital-name" value="City Central Trauma & Blood Bank" required>
+          <div class="form-group">
+            <label for="req-units">Units (donors) needed</label>
+            <input type="number" id="req-units" min="1" max="100" value="1" required>
+          </div>
+          <div class="form-group">
+            <label for="req-time-limit">Donor must arrive within</label>
+            <select id="req-time-limit">
+              <option value="30">30 minutes</option>
+              <option value="60" selected>1 hour</option>
+              <option value="120">2 hours</option>
+              <option value="240">4 hours</option>
+              <option value="360">6 hours</option>
+              <option value="720">12 hours</option>
+              <option value="1440">24 hours</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <input type="number" id="req-time-custom" min="10" max="2880" placeholder="Minutes (10–2880)" style="display:none; margin-top:6px;">
+          </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="req-hospital-lat">Hospital Latitude</label>
-            <input type="number" step="0.0001" id="req-hospital-lat" value="12.9915" required>
+            <label for="req-radius">Alert donors within</label>
+            <select id="req-radius">
+              <option value="5">5 km</option>
+              <option value="10">10 km</option>
+              <option value="25" selected>25 km</option>
+              <option value="50">50 km</option>
+              <option value="100">100 km</option>
+              <option value="">Any distance (reachable in time)</option>
+            </select>
           </div>
           <div class="form-group">
-            <label for="req-hospital-lon">Hospital Longitude</label>
-            <input type="number" step="0.0001" id="req-hospital-lon" value="77.5852" required>
+            <label for="req-contact-phone">Contact number shown to donors</label>
+            <input type="tel" id="req-contact-phone" placeholder="+91 80 1234 5678">
           </div>
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="req-compatible">
+          <span>Also alert compatible blood groups: <strong id="req-compatible-groups">O−, O+</strong></span>
+        </label>
+
+        <fieldset class="form-fieldset">
+          <legend>Hospital location</legend>
+          <div class="inline-actions">
+            <input type="text" id="req-facility-search" placeholder="Search blood bank directory (name, city…)">
+            <button type="button" class="btn btn-sm btn-ghost" id="req-facility-search-btn">Directory</button>
+            <button type="button" class="btn btn-sm btn-ghost" id="req-address-search-btn">Address (OpenStreetMap)</button>
+            <button type="button" class="btn btn-sm btn-ghost" id="req-use-gps">📍 My location</button>
+          </div>
+          <div id="req-search-results" class="search-results"></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="req-hospital-name">Hospital name</label>
+              <input type="text" id="req-hospital-name" required maxlength="150">
+            </div>
+            <div class="form-group">
+              <label for="req-hospital-address">Address</label>
+              <input type="text" id="req-hospital-address" maxlength="250">
+            </div>
+          </div>
+          <div id="req-map" class="map-container map-small"></div>
+          <p class="field-help" id="req-location-label">Search above or click the map to set the hospital location.</p>
+          <label class="checkbox-row" id="req-facility-confirm-row" style="display:none;">
+            <input type="checkbox" id="req-facility-confirm">
+            <span>I checked this directory entry's name and map position (the directory is from 2015)</span>
+          </label>
+        </fieldset>
+
+        <div class="form-group">
+          <label for="req-notes">Note for donors <span class="label-hint">(optional)</span></label>
+          <input type="text" id="req-notes" maxlength="500" placeholder="e.g. Come to Emergency, ask for the blood bank desk">
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-ghost" onclick="closeModal('modal-request')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Dispatch Dynamic Waves</button>
+          <button type="button" class="btn btn-ghost" data-close="modal-request">Cancel</button>
+          <button type="submit" class="btn btn-primary">🚨 Alert All Matching Donors</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ================================================================== -->
-  <!-- MODAL: DYNAMIC RECRUITMENT WAVES & CANDIDATES MONITOR              -->
-  <!-- ================================================================== -->
+  <!-- ============================== MODAL: REQUEST DETAIL ============================== -->
   <div id="modal-recruitment" class="modal-backdrop" style="display: none;">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
       <div class="modal-header">
         <div>
-          <h3 class="modal-title" id="recruitment-modal-title">Recruitment Waves Monitor</h3>
-          <p class="modal-subtitle" id="recruitment-modal-subtitle">Evaluating candidates via UDI road metrics...</p>
+          <h3 class="modal-title" id="recruitment-modal-title">Request</h3>
+          <p class="modal-subtitle" id="recruitment-modal-subtitle"></p>
         </div>
-        <button class="modal-close" onclick="closeModal('modal-recruitment')">×</button>
+        <button class="modal-close" data-close="modal-recruitment">×</button>
       </div>
 
-      <!-- Wave Status Alert Banner -->
-      <div class="wave-banner" id="wave-banner">
-        <div class="wave-info">
-          <span class="wave-label">CURRENT WAVE:</span>
-          <span class="wave-val" id="wave-current-batch">Batch #1</span>
-        </div>
-        <div class="wave-info">
-          <span class="wave-label">STATUS:</span>
-          <span class="wave-badge badge-active" id="wave-status-text">DISPATCHED</span>
-        </div>
-        <div class="wave-info">
-          <span class="wave-label">EXPIRES IN:</span>
-          <span class="wave-timer" id="wave-deadline-timer">--s</span>
-        </div>
-        <div class="wave-info">
-          <span class="wave-label">RESERVATION:</span>
-          <span class="wave-val" id="wave-reservation-count">0 / 1 Units</span>
-        </div>
+      <div class="wave-banner">
+        <div class="wave-info"><span class="wave-label">STATUS</span><span class="wave-badge" id="detail-status">—</span></div>
+        <div class="wave-info"><span class="wave-label">TIME LEFT</span><span class="wave-timer" id="detail-countdown">—</span></div>
+        <div class="wave-info"><span class="wave-label">UNITS</span><span class="wave-val" id="detail-units">—</span></div>
+        <div class="wave-info"><span class="wave-label">DONORS ALERTED</span><span class="wave-val" id="detail-alerted">—</span></div>
+        <div class="wave-info"><span class="wave-label">ACCEPTED</span><span class="wave-val" id="detail-accepted">—</span></div>
       </div>
 
-      <!-- Wave Candidate Tabs -->
+      <div id="detail-map" class="map-container map-medium"></div>
+      <p class="field-help" id="detail-map-label">Hospital and accepted donors.</p>
+
       <div class="subtabs">
-        <button id="tab-candidates" class="subtab active" onclick="switchRecruitmentView('candidates')">All Wave Candidates</button>
-        <button id="tab-accepted" class="subtab" onclick="switchRecruitmentView('accepted')">Accepted Donors (Arrival ETA)</button>
+        <button id="tab-accepted" class="subtab active" data-view="accepted">Accepted donors</button>
+        <button id="tab-candidates" class="subtab" data-view="candidates">All alerted donors</button>
       </div>
-
-      <div class="candidates-container" id="candidates-container">
-        <!-- Rendered dynamically by JS -->
-      </div>
+      <div class="candidates-container" id="candidates-container"></div>
 
       <div class="modal-footer">
-        <button class="btn btn-ghost" onclick="refreshRecruitmentModal()">🔄 Refresh Wave Data</button>
-        <button class="btn btn-primary" onclick="closeModal('modal-recruitment')">Close</button>
+        <button class="btn btn-ghost" id="btn-cancel-request">Cancel request</button>
+        <button class="btn btn-primary" data-close="modal-recruitment">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- ================================================================== -->
-  <!-- MODAL: INTERACTIVE ROUTE & MAP PREVIEW                             -->
-  <!-- ================================================================== -->
+  <!-- ============================== MODAL: ROUTE ============================== -->
   <div id="modal-route" class="modal-backdrop" style="display: none;">
     <div class="modal-dialog modal-lg">
       <div class="modal-header">
-        <h3 class="modal-title" id="route-modal-title">Emergency Road Navigation</h3>
-        <button class="modal-close" onclick="closeModal('modal-route')">×</button>
+        <div>
+          <h3 class="modal-title" id="route-modal-title">Route</h3>
+          <p class="modal-subtitle" id="route-modal-subtitle"></p>
+        </div>
+        <button class="modal-close" data-close="modal-route">×</button>
       </div>
-      
       <div class="route-metrics-bar">
-        <div class="route-metric">
-          <span class="lbl">Travel Distance:</span>
-          <span class="val" id="route-distance-val">— km</span>
-        </div>
-        <div class="route-metric">
-          <span class="lbl">Traffic-Aware ETA:</span>
-          <span class="val text-accent" id="route-duration-val">— min</span>
-        </div>
-        <div class="route-metric">
-          <span class="lbl">Routing Engine:</span>
-          <span class="val" id="route-provider-val">Synthetic Grid</span>
-        </div>
+        <div class="route-metric"><span class="lbl">Road distance</span><span class="val" id="route-distance-val">—</span></div>
+        <div class="route-metric"><span class="lbl">Travel time</span><span class="val text-accent" id="route-duration-val">—</span></div>
+        <div class="route-metric"><span class="lbl">Source</span><span class="val" id="route-provider-val">—</span></div>
       </div>
-
       <div id="route-map" class="map-container"></div>
-
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="closeModal('modal-route')">Done</button>
+        <a class="btn btn-ghost" id="route-osm-link" target="_blank" rel="noopener">Open directions in OpenStreetMap ↗</a>
+        <button class="btn btn-primary" data-close="modal-route">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================== MODAL: PICK LOCATION ============================== -->
+  <div id="modal-pick" class="modal-backdrop" style="display: none;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title">Pick your location</h3>
+        <button class="modal-close" data-close="modal-pick">×</button>
+      </div>
+      <div class="inline-actions">
+        <input type="text" id="pick-address" placeholder="Search an address or area">
+        <button type="button" class="btn btn-sm btn-ghost" id="pick-address-search">Search</button>
+      </div>
+      <div id="pick-results" class="search-results"></div>
+      <div id="pick-map" class="map-container"></div>
+      <p class="field-help" id="pick-label">Click the map to place the pin.</p>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close="modal-pick">Cancel</button>
+        <button class="btn btn-primary" id="pick-save">Save location</button>
       </div>
     </div>
   </div>
